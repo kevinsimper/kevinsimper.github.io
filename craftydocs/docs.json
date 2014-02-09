@@ -1,0 +1,4733 @@
+{
+  "core.js": [
+    {
+      "name": "Crafty",
+      "category": "Core",
+      "doc": [
+        "Select a set of or single entities by components or an entity's ID.",
+        "Crafty uses syntax similar to jQuery by having a selector engine to select entities by their components.",
+        "If there is more than one match, the return value is an Array-like object listing the ID numbers of each matching entity. If there is exactly one match, the entity itself is returned. If you're not sure how many matches to expect, check the number of matches via Crafty(...).length. Alternatively, use Crafty(...).each(...), which works in all cases."
+      ],
+      "example": [
+        "",
+        "~~~",
+        "   Crafty(\"MyComponent\")",
+        "   Crafty(\"Hello 2D Component\")",
+        "   Crafty(\"Hello, 2D, Component\")",
+        "~~~",
+        "The first selector will return all entities that have the component `MyComponent`. The second will return all entities that have `Hello` and `2D` and `Component` whereas the last will return all entities that have at least one of those components (or).",
+        "~~~",
+        "  Crafty(\"*\")",
+        "~~~",
+        "Passing `*` will select all entities.",
+        "~~~",
+        "  Crafty(1)",
+        "~~~",
+        "Passing an integer will select the entity with that `ID`.",
+        "To work directly with an array of entities, use the `get()` method on a selection.",
+        "To call a function in the context of each entity, use the `.each()` method.",
+        "The event related methods such as `bind` and `trigger` will work on selections of entities."
+      ],
+      "see": [
+        ".get",
+        ".each"
+      ]
+    },
+    {
+      "name": "Crafty Core",
+      "category": "Core",
+      "trigger": [
+        "NewEntityName - After setting new name for entity - String - entity name",
+        "NewComponent - when a new component is added to the entity - String - Component",
+        "RemoveComponent - when a component is removed from the entity - String - Component",
+        "Remove - when the entity is removed by calling .destroy()"
+      ],
+      "doc": "Set of methods added to every single entity."
+    },
+    {
+      "name": ".setName",
+      "comp": "Crafty Core",
+      "sign": "public this .setName(String name)",
+      "param": "name - A human readable name for debugging purposes.",
+      "example": [
+        "",
+        "~~~",
+        "this.setName(\"Player\");",
+        "~~~"
+      ]
+    },
+    {
+      "name": ".addComponent",
+      "comp": "Crafty Core",
+      "sign": [
+        "public this .addComponent(String componentList)",
+        "public this .addComponent(String Component1[, .., String ComponentN])"
+      ],
+      "param": [
+        "componentList - A string of components to add separated by a comma `,`",
+        "Component# - Component ID to add."
+      ],
+      "doc": [
+        "Adds a component to the selected entities or entity.",
+        "Components are used to extend the functionality of entities.",
+        "This means it will copy properties and assign methods to",
+        "augment the functionality of the entity.",
+        "For adding multiple components, you can either pass a string with",
+        "all the component names (separated by commas), or pass each component name as",
+        "an argument.",
+        "If the component has a function named `init` it will be called.",
+        "If the entity already has the component, the component is skipped (nothing happens)."
+      ],
+      "example": [
+        "",
+        "~~~",
+        "this.addComponent(\"2D, Canvas\");",
+        "this.addComponent(\"2D\", \"Canvas\");",
+        "~~~"
+      ]
+    },
+    {
+      "name": ".toggleComponent",
+      "comp": "Crafty Core",
+      "sign": [
+        "public this .toggleComponent(String ComponentList)",
+        "public this .toggleComponent(String Component1[, .., String componentN])"
+      ],
+      "param": [
+        "ComponentList - A string of components to add or remove separated by a comma `,`",
+        "Component# - Component ID to add or remove."
+      ],
+      "doc": "Add or Remove Components from an entity.",
+      "example": [
+        "",
+        "~~~",
+        "var e = Crafty.e(\"2D,DOM,Test\");",
+        "e.toggleComponent(\"Test,Test2\"); //Remove Test, add Test2",
+        "e.toggleComponent(\"Test,Test2\"); //Add Test, remove Test2",
+        "~~~",
+        "~~~",
+        "var e = Crafty.e(\"2D,DOM,Test\");",
+        "e.toggleComponent(\"Test\",\"Test2\"); //Remove Test, add Test2",
+        "e.toggleComponent(\"Test\",\"Test2\"); //Add Test, remove Test2",
+        "e.toggleComponent(\"Test\");         //Remove Test",
+        "~~~"
+      ]
+    },
+    {
+      "name": ".requires",
+      "comp": "Crafty Core",
+      "sign": "public this .requires(String componentList)",
+      "param": "componentList - List of components that must be added",
+      "doc": [
+        "Makes sure the entity has the components listed. If the entity does not",
+        "have the component, it will add it.",
+        "(In the current version of Crafty, this function behaves exactly the same",
+        "as `addComponent`. By convention, developers have used `requires` for",
+        "component dependencies -- i.e. to indicate specifically that one component",
+        "will only work properly if another component is present -- and used",
+        "`addComponent` in all other situations.)"
+      ],
+      "see": ".addComponent"
+    },
+    {
+      "name": ".removeComponent",
+      "comp": "Crafty Core",
+      "sign": "public this .removeComponent(String Component[, soft])",
+      "param": [
+        "component - Component to remove",
+        "soft - Whether to soft remove it (defaults to `true`)"
+      ],
+      "doc": [
+        "Removes a component from an entity. A soft remove (the default) will only",
+        "refrain `.has()` from returning true. Hard will remove all",
+        "associated properties and methods."
+      ],
+      "example": [
+        "",
+        "~~~",
+        "var e = Crafty.e(\"2D,DOM,Test\");",
+        "e.removeComponent(\"Test\");        //Soft remove Test component",
+        "e.removeComponent(\"Test\", false); //Hard remove Test component",
+        "~~~"
+      ]
+    },
+    {
+      "name": ".getId",
+      "comp": "Crafty Core",
+      "sign": "public Number .getId(void)",
+      "doc": [
+        "Returns the ID of this entity.",
+        "For better performance, simply use the this[0] property."
+      ],
+      "example": [
+        "",
+        "Finding out the `ID` of an entity can be done by returning the property `0`.",
+        "~~~",
+        "   var ent = Crafty.e(\"2D\");",
+        "   ent[0]; //ID",
+        "   ent.getId(); //also ID",
+        "~~~"
+      ]
+    },
+    {
+      "name": ".has",
+      "comp": "Crafty Core",
+      "sign": "public Boolean .has(String component)",
+      "doc": [
+        "Returns `true` or `false` depending on if the",
+        "entity has the given component.",
+        "For better performance, simply use the `.__c` object",
+        "which will be `true` if the entity has the component or",
+        "will not exist (or be `false`)."
+      ]
+    },
+    {
+      "name": ".attr",
+      "comp": "Crafty Core",
+      "sign": [
+        "public this .attr(String property, * value)",
+        "public this .attr(Object map)"
+      ],
+      "param": [
+        "property - Property of the entity to modify",
+        "value - Value to set the property to",
+        "map - Object where the key is the property to modify and the value as the property value"
+      ],
+      "trigger": "Change - when properties change - {key: value}",
+      "doc": "Use this method to set any property of the entity.",
+      "example": [
+        "",
+        "~~~",
+        "this.attr({key: \"value\", prop: 5});",
+        "this.key; //value",
+        "this.prop; //5",
+        "this.attr(\"key\", \"newvalue\");",
+        "this.key; //newvalue",
+        "~~~"
+      ]
+    },
+    {
+      "name": ".toArray",
+      "comp": "Crafty Core",
+      "sign": "public this .toArray(void)",
+      "doc": "This method will simply return the found entities as an array of ids.  To get an array of the actual entities, use `get()`.",
+      "see": ".get"
+    },
+    {
+      "name": ".timeout",
+      "comp": "Crafty Core",
+      "sign": "public this .timeout(Function callback, Number delay)",
+      "param": [
+        "callback - Method to execute after given amount of milliseconds",
+        "delay - Amount of milliseconds to execute the method"
+      ],
+      "doc": [
+        "The delay method will execute a function after a given amount of time in milliseconds.",
+        "Essentially a wrapper for `setTimeout`."
+      ],
+      "example": [
+        "",
+        "Destroy itself after 100 milliseconds",
+        "~~~",
+        "this.timeout(function() {",
+        "this.destroy();",
+        "}, 100);",
+        "~~~"
+      ]
+    },
+    {
+      "name": ".bind",
+      "comp": "Crafty Core",
+      "sign": "public this .bind(String eventName, Function callback)",
+      "param": [
+        "eventName - Name of the event to bind to",
+        "callback - Method to execute when the event is triggered"
+      ],
+      "doc": [
+        "Attach the current entity (or entities) to listen for an event.",
+        "Callback will be invoked when an event with the event name passed",
+        "is triggered. Depending on the event, some data may be passed",
+        "via an argument to the callback function.",
+        "The first argument is the event name (can be anything) whilst the",
+        "second argument is the callback. If the event has data, the",
+        "callback should have an argument.",
+        "Events are arbitrary and provide communication between components.",
+        "You can trigger or bind an event even if it doesn't exist yet.",
+        "Unlike DOM events, Crafty events are exectued synchronously."
+      ],
+      "example": [
+        "",
+        "~~~",
+        "this.attr(\"triggers\", 0); //set a trigger count",
+        "this.bind(\"myevent\", function() {",
+        "    this.triggers++; //whenever myevent is triggered, increment",
+        "});",
+        "this.bind(\"EnterFrame\", function() {",
+        "    this.trigger(\"myevent\"); //trigger myevent on every frame",
+        "});",
+        "~~~"
+      ],
+      "see": ".trigger, .unbind"
+    },
+    {
+      "name": ".uniqueBind",
+      "comp": "Crafty Core",
+      "sign": "public Number .uniqueBind(String eventName, Function callback)",
+      "param": [
+        "eventName - Name of the event to bind to",
+        "callback - Method to execute upon event triggered"
+      ],
+      "doc": "Works like Crafty.bind, but prevents a callback from being bound multiple times.",
+      "see": ".bind"
+    },
+    {
+      "name": ".one",
+      "comp": "Crafty Core",
+      "sign": "public Number one(String eventName, Function callback)",
+      "param": [
+        "eventName - Name of the event to bind to",
+        "callback - Method to execute upon event triggered"
+      ],
+      "doc": "Works like Crafty.bind, but will be unbound once the event triggers.",
+      "see": ".bind"
+    },
+    {
+      "name": ".unbind",
+      "comp": "Crafty Core",
+      "sign": "public this .unbind(String eventName[, Function callback])",
+      "param": [
+        "eventName - Name of the event to unbind",
+        "callback - Function to unbind"
+      ],
+      "doc": [
+        "Removes binding with an event from current entity.",
+        "Passing an event name will remove all events bound to",
+        "that event. Passing a reference to the callback will",
+        "unbind only that callback."
+      ],
+      "see": ".bind, .trigger"
+    },
+    {
+      "name": ".trigger",
+      "comp": "Crafty Core",
+      "sign": "public this .trigger(String eventName[, Object data])",
+      "param": [
+        "eventName - Event to trigger",
+        "data - Arbitrary data that will be passed into every callback as an argument"
+      ],
+      "doc": [
+        "Trigger an event with arbitrary data. Will invoke all callbacks with",
+        "the context (value of `this`) of the current entity object.",
+        "*Note: This will only execute callbacks within the current entity, no other entity.*",
+        "The first argument is the event name to trigger and the optional",
+        "second argument is the arbitrary event data. This can be absolutely anything.",
+        "Unlike DOM events, Crafty events are exectued synchronously."
+      ]
+    },
+    {
+      "name": ".each",
+      "comp": "Crafty Core",
+      "sign": "public this .each(Function method)",
+      "param": "method - Method to call on each iteration",
+      "doc": [
+        "Iterates over found entities, calling a function for every entity.",
+        "The function will be called for every entity and will pass the index",
+        "in the iteration as an argument. The context (value of `this`) of the",
+        "function will be the current entity in the iteration."
+      ],
+      "example": [
+        "",
+        "Destroy every second 2D entity",
+        "~~~",
+        "Crafty(\"2D\").each(function(i) {",
+        "    if(i % 2 === 0) {",
+        "        this.destroy();",
+        "    }",
+        "});",
+        "~~~"
+      ]
+    },
+    {
+      "name": ".get",
+      "comp": "Crafty Core",
+      "sign": [
+        "public Array .get()",
+        "public Entity .get(Number index)"
+      ],
+      "param": "index - The index of the entity to return.  If negative, counts back from the end of the array.",
+      "example": [
+        "",
+        "Get an array containing every \"2D\" entity",
+        "~~~",
+        "var arr = Crafty(\"2D\").get()",
+        "~~~",
+        "Get the first entity matching the selector",
+        "~~~",
+        "// equivalent to Crafty(\"2D\").get()[0], but doesn't create a new array",
+        "var e = Crafty(\"2D\").get(0)",
+        "~~~",
+        "Get the last \"2D\" entity matching the selector",
+        "~~~",
+        "var e = Crafty(\"2D\").get(-1)",
+        "~~~"
+      ]
+    },
+    {
+      "name": ".clone",
+      "comp": "Crafty Core",
+      "sign": "public Entity .clone(void)",
+      "doc": [
+        "Method will create another entity with the exact same",
+        "properties, components and methods as the current entity."
+      ]
+    },
+    {
+      "name": ".setter",
+      "comp": "Crafty Core",
+      "sign": "public this .setter(String property, Function callback)",
+      "param": [
+        "property - Property to watch for modification",
+        "callback - Method to execute if the property is modified"
+      ],
+      "doc": [
+        "Will watch a property waiting for modification and will then invoke the",
+        "given callback when attempting to modify."
+      ]
+    },
+    {
+      "name": ".destroy",
+      "comp": "Crafty Core",
+      "sign": "public this .destroy(void)",
+      "doc": "Will remove all event listeners and delete all properties as well as removing from the stage"
+    },
+    {
+      "name": "Crafty.extend",
+      "category": "Core",
+      "doc": "Used to extend the Crafty namespace."
+    },
+    {
+      "name": "Crafty.init",
+      "category": "Core",
+      "trigger": "Load - Just after the viewport is initialised. Before the EnterFrame loops is started",
+      "sign": [
+        "public this Crafty.init([Number width, Number height, String stage_elem])",
+        "public this Crafty.init([Number width, Number height, HTMLElement stage_elem])"
+      ],
+      "param": [
+        "Number width - Width of the stage",
+        "Number height - Height of the stage",
+        "String or HTMLElement stage_elem - the element to use for the stage"
+      ],
+      "doc": [
+        "Sets the element to use as the stage, creating it if necessary.  By default a div with id 'cr-stage' is used, but if the 'stage_elem' argument is provided that will be used instead.  (see `Crafty.viewport.init`)",
+        "Starts the `EnterFrame` interval. This will call the `EnterFrame` event for every frame.",
+        "Can pass width and height values for the stage otherwise will default to window size (see `Crafty.DOM.window`).",
+        "All `Load` events will be executed.",
+        "Uses `requestAnimationFrame` to sync the drawing with the browser but will default to `setInterval` if the browser does not support it."
+      ],
+      "see": "Crafty.stop,  Crafty.viewport"
+    },
+    {
+      "name": "Crafty.getVersion",
+      "category": "Core",
+      "sign": "public String Crafty.getVersion()",
+      "doc": "Return current version of crafty",
+      "example": [
+        "",
+        "~~~",
+        "Crafty.getVersion(); //'0.5.2'",
+        "~~~"
+      ]
+    },
+    {
+      "name": "Crafty.stop",
+      "category": "Core",
+      "trigger": "CraftyStop - when the game is stopped",
+      "sign": "public this Crafty.stop([bool clearState])",
+      "param": "clearState - if true the stage and all game state is cleared.",
+      "doc": [
+        "Stops the EnterFrame interval and removes the stage element.",
+        "To restart, use `Crafty.init()`."
+      ],
+      "see": "Crafty.init"
+    },
+    {
+      "name": "Crafty.pause",
+      "category": "Core",
+      "trigger": [
+        "Pause - when the game is paused",
+        "Unpause - when the game is unpaused"
+      ],
+      "sign": "public this Crafty.pause(void)",
+      "doc": [
+        "Pauses the game by stopping the EnterFrame event from firing. If the game is already paused it is unpaused.",
+        "You can pass a boolean parameter if you want to pause or unpause no matter what the current state is.",
+        "Modern browsers pauses the game when the page is not visible to the user. If you want the Pause event",
+        "to be triggered when that happens you can enable autoPause in `Crafty.settings`."
+      ],
+      "example": [
+        "",
+        "Have an entity pause the game when it is clicked.",
+        "~~~",
+        "button.bind(\"click\", function() {",
+        "    Crafty.pause();",
+        "});",
+        "~~~"
+      ]
+    },
+    {
+      "name": "Crafty.isPaused",
+      "category": "Core",
+      "sign": "public this Crafty.isPaused()",
+      "doc": "Check whether the game is already paused or not.",
+      "example": [
+        "",
+        "~~~",
+        "Crafty.isPaused();",
+        "~~~"
+      ]
+    },
+    {
+      "name": "Crafty.timer",
+      "category": "Game Loop",
+      "doc": "Handles game ticks"
+    },
+    {
+      "name": "Crafty.timer.steptype",
+      "comp": "Crafty.timer",
+      "sign": "public void Crafty.timer.steptype(mode [, maxTimeStep])",
+      "doc": [
+        "Can be called to set the type of timestep the game loop uses",
+        "* In \"fixed\" mode, each frame is sent the same value of `dt`, and to achieve the target game speed, mulitiple frame events are triggered before each render.",
+        "* In \"variable\" mode, there is only one frame triggered per render.  This recieves a value of `dt` equal to the actual elapsed time since the last frame.",
+        "* In \"semifixed\" mode, multiple frames per render are processed, and the total time since the last frame is divided evenly between them."
+      ],
+      "param": [
+        "mode - the type of time loop.  Allowed values are \"fixed\", \"semifixed\", and \"variable\".  Crafty defaults to \"fixed\".",
+        "mode - For \"fixed\", sets the max number of frames per step.   For \"variable\" and \"semifixed\", sets the maximum time step allowed."
+      ]
+    },
+    {
+      "name": "Crafty.timer.step",
+      "comp": "Crafty.timer",
+      "sign": "public void Crafty.timer.step()",
+      "trigger": [
+        "EnterFrame - Triggered on each frame.  Passes the frame number, and the amount of time since the last frame.  If the time is greater than maxTimestep, that will be used instead.  (The default value of maxTimestep is 50 ms.) - { frame: Number, dt:Number }",
+        "RenderScene - Triggered every time a scene should be rendered",
+        "MeasureWaitTime - Triggered at the beginning of each step after the first.  Passes the time the game loop waited between steps. - Number",
+        "MeasureFrameTime - Triggered after each step.  Passes the time it took to advance one frame. - Number",
+        "MeasureRenderTime - Triggered after each render. Passes the time it took to render the scene - Number"
+      ],
+      "doc": "Advances the game by triggering `EnterFrame` and `RenderScene`"
+    },
+    {
+      "name": "Crafty.timer.FPS",
+      "comp": "Crafty.timer",
+      "sign": [
+        "public void Crafty.timer.FPS()",
+        "public void Crafty.timer.FPS(Number value)"
+      ],
+      "doc": [
+        "Returns the target frames per second. This is not an actual frame rate.",
+        "Sets the target frames per second. This is not an actual frame rate.",
+        "The default rate is 50."
+      ],
+      "param": "value - the target rate"
+    },
+    {
+      "name": "Crafty.timer.simulateFrames",
+      "comp": "Crafty.timer",
+      "sign": "public this Crafty.timer.simulateFrames(Number frames[, Number timestep])",
+      "doc": "Advances the game state by a number of frames and draws the resulting stage at the end. Useful for tests and debugging.",
+      "param": [
+        "frames - number of frames to simulate",
+        "timestep - the duration to pass each frame.  Defaults to milliSecPerFrame (20 ms) if not specified."
+      ]
+    },
+    {
+      "name": "Crafty.e",
+      "category": "Core",
+      "trigger": "NewEntity - When the entity is created and all components are added - { id:Number }",
+      "sign": [
+        "public Entity Crafty.e(String componentList)",
+        "public Entity Crafty.e(String component1[, .., String componentN])"
+      ],
+      "param": [
+        "componentList - List of components to assign to new entity",
+        "component# - Component to add"
+      ],
+      "doc": [
+        "Creates an entity. Any arguments will be applied in the same",
+        "way `.addComponent()` is applied as a quick way to add components.",
+        "Any component added will augment the functionality of",
+        "the created entity by assigning the properties and methods from the component to the entity."
+      ],
+      "example": [
+        "",
+        "~~~",
+        "var myEntity = Crafty.e(\"2D, DOM, Color\");",
+        "~~~"
+      ],
+      "see": "Crafty.c"
+    },
+    {
+      "name": "Crafty.c",
+      "category": "Core",
+      "sign": "public void Crafty.c(String name, Object component)",
+      "param": [
+        "name - Name of the component",
+        "component - Object with the component's properties and methods"
+      ],
+      "doc": [
+        "Creates a component where the first argument is the ID and the second",
+        "is the object that will be inherited by entities.",
+        "A couple of methods are treated specially. They are invoked in partiular contexts, and (in those contexts) cannot be overridden by other components.",
+        "- `init` will be called when the component is added to an entity",
+        "- `remove` will be called just before a component is removed, or before an entity is destroyed. It is passed a single boolean parameter that is `true` if the entity is being destroyed.",
+        "In addition to these hardcoded special methods, there are some conventions for writing components.",
+        "- Properties or methods that start with an underscore are considered private.",
+        "- A method with the same name as the component is considered to be a constructor",
+        "and is generally used when you need to pass configuration data to the component on a per entity basis."
+      ],
+      "example": [
+        "",
+        "~~~",
+        "Crafty.c(\"Annoying\", {",
+        "    _message: \"HiHi\",",
+        "    init: function() {",
+        "        this.bind(\"EnterFrame\", function() { alert(this.message); });",
+        "    },",
+        "    annoying: function(message) { this.message = message; }",
+        "});",
+        "Crafty.e(\"Annoying\").annoying(\"I'm an orange...\");",
+        "~~~",
+        "WARNING:",
+        "in the example above the field _message is local to the entity. That is, if you create many entities with the Annoying component they can all have different values for _message. That is because it is a simple value, and simple values are copied by value. If however the field had been an object or array, the value would have been shared by all entities with the component because complex types are copied by reference in javascript. This is probably not what you want and the following example demonstrates how to work around it:",
+        "~~~",
+        "Crafty.c(\"MyComponent\", {",
+        "    _iAmShared: { a: 3, b: 4 },",
+        "    init: function() {",
+        "        this._iAmNotShared = { a: 3, b: 4 };",
+        "    },",
+        "});",
+        "~~~"
+      ],
+      "see": "Crafty.e"
+    },
+    {
+      "name": "Crafty.trigger",
+      "category": "Core, Events",
+      "sign": "public void Crafty.trigger(String eventName, * data)",
+      "param": [
+        "eventName - Name of the event to trigger",
+        "data - Arbitrary data to pass into the callback as an argument"
+      ],
+      "doc": [
+        "This method will trigger every single callback attached to the event name. This means",
+        "every global event and every entity that has a callback."
+      ],
+      "see": "Crafty.bind"
+    },
+    {
+      "name": "Crafty.bind",
+      "category": "Core, Events",
+      "sign": "public Number bind(String eventName, Function callback)",
+      "param": [
+        "eventName - Name of the event to bind to",
+        "callback - Method to execute upon event triggered"
+      ],
+      "doc": [
+        "Binds to a global event. Method will be executed when `Crafty.trigger` is used",
+        "with the event name."
+      ],
+      "see": "Crafty.trigger, Crafty.unbind"
+    },
+    {
+      "name": "Crafty.uniqueBind",
+      "category": "Core, Events",
+      "sign": "public Number uniqueBind(String eventName, Function callback)",
+      "param": [
+        "eventName - Name of the event to bind to",
+        "callback - Method to execute upon event triggered"
+      ],
+      "doc": "Works like Crafty.bind, but prevents a callback from being bound multiple times.",
+      "see": "Crafty.bind"
+    },
+    {
+      "name": "Crafty.one",
+      "category": "Core, Events",
+      "sign": "public Number one(String eventName, Function callback)",
+      "param": [
+        "eventName - Name of the event to bind to",
+        "callback - Method to execute upon event triggered"
+      ],
+      "doc": "Works like Crafty.bind, but will be unbound once the event triggers.",
+      "see": "Crafty.bind"
+    },
+    {
+      "name": "Crafty.unbind",
+      "category": "Core, Events",
+      "sign": [
+        "public Boolean Crafty.unbind(String eventName, Function callback)",
+        "public Boolean Crafty.unbind(String eventName, Number callbackID)"
+      ],
+      "param": [
+        "eventName - Name of the event to unbind",
+        "callback - Function to unbind",
+        "callbackID - ID of the callback"
+      ],
+      "doc": "Unbind any event from any entity or global event.",
+      "example": [
+        "",
+        "~~~",
+        "   var play_gameover_sound = function () {...};",
+        "   Crafty.bind('GameOver', play_gameover_sound);",
+        "   ...",
+        "   Crafty.unbind('GameOver', play_gameover_sound);",
+        "~~~",
+        "The first line defines a callback function. The second line binds that",
+        "function so that `Crafty.trigger('GameOver')` causes that function to",
+        "run. The third line unbinds that function.",
+        "~~~",
+        "   Crafty.unbind('GameOver');",
+        "~~~",
+        "This unbinds ALL global callbacks for the event 'GameOver'. That",
+        "includes all callbacks attached by `Crafty.bind('GameOver', ...)`, but",
+        "none of the callbacks attached by `some_entity.bind('GameOver', ...)`."
+      ]
+    },
+    {
+      "name": "Crafty.frame",
+      "category": "Core",
+      "sign": "public Number Crafty.frame(void)",
+      "doc": "Returns the current frame number"
+    },
+    {
+      "name": "Crafty.settings",
+      "category": "Core",
+      "doc": "Modify the inner workings of Crafty through the settings."
+    },
+    {
+      "name": "Crafty.settings.register",
+      "comp": "Crafty.settings",
+      "sign": "public void Crafty.settings.register(String settingName, Function callback)",
+      "param": [
+        "settingName - Name of the setting",
+        "callback - Function to execute when use modifies setting"
+      ],
+      "doc": "Use this to register custom settings. Callback will be executed when `Crafty.settings.modify` is used.",
+      "see": "Crafty.settings.modify"
+    },
+    {
+      "name": "Crafty.settings.modify",
+      "comp": "Crafty.settings",
+      "sign": "public void Crafty.settings.modify(String settingName, * value)",
+      "param": [
+        "settingName - Name of the setting",
+        "value - Value to set the setting to"
+      ],
+      "doc": "Modify settings through this method.",
+      "see": "Crafty.settings.register, Crafty.settings.get"
+    },
+    {
+      "name": "Crafty.settings.get",
+      "comp": "Crafty.settings",
+      "sign": "public * Crafty.settings.get(String settingName)",
+      "param": "settingName - Name of the setting",
+      "doc": "Returns the current value of the setting.",
+      "see": "Crafty.settings.register, Crafty.settings.get"
+    },
+    {
+      "name": "Crafty.clone",
+      "category": "Core",
+      "sign": "public Object .clone(Object obj)",
+      "param": "obj - an object",
+      "doc": "Deep copy (a.k.a clone) of an object."
+    }
+  ],
+  "HashMap.js": [
+    {
+      "name": "Crafty.HashMap",
+      "category": "2D",
+      "param": "cellsize - the cell size. If omitted, `cellsize` is 64.",
+      "doc": [
+        "Broad-phase collision detection engine. See background information at",
+        "Set `cellsize`.",
+        "And create `this.map`.",
+        "- [N Tutorial B - Broad-Phase Collision](http://www.metanetsoftware.com/technique/tutorialB.html)",
+        "- [Broad-Phase Collision Detection with CUDA](http.developer.nvidia.com/GPUGems3/gpugems3_ch32.html)"
+      ],
+      "see": "Crafty.map"
+    },
+    {
+      "name": "Crafty.HashMap.insert",
+      "comp": "Crafty.HashMap",
+      "sign": "public Object Crafty.map.insert(Object obj)",
+      "param": "obj - An entity to be inserted.",
+      "doc": [
+        "`obj` is inserted in '.map' of the corresponding broad phase cells. An object of the following fields is returned.",
+        "~~~",
+        "- the object that keep track of cells (keys)",
+        "- `obj`",
+        "- the HashMap object",
+        "~~~"
+      ]
+    },
+    {
+      "name": "Crafty.HashMap.search",
+      "comp": "Crafty.HashMap",
+      "sign": "public Object Crafty.HashMap.search(Object rect[, Boolean filter])",
+      "param": [
+        "rect - the rectangular region to search for entities.",
+        "filter - Default value is true. Otherwise, must be false."
+      ],
+      "doc": [
+        "- If `filter` is `false`, just search for all the entries in the give `rect` region by broad phase collision. Entity may be returned duplicated.",
+        "- If `filter` is `true`, filter the above results by checking that they actually overlap `rect`.",
+        "The easier usage is with `filter`=`true`. For performance reason, you may use `filter`=`false`, and filter the result yourself. See examples in drawing.js and collision.js"
+      ]
+    },
+    {
+      "name": "Crafty.HashMap.remove",
+      "comp": "Crafty.HashMap",
+      "sign": "public void Crafty.map.remove([Object keys, ]Object obj)",
+      "param": [
+        "keys - key region. If omitted, it will be derived from obj by `Crafty.HashMap.key`.",
+        "obj - need more document."
+      ],
+      "doc": [
+        "Remove an entity in a broad phase map.",
+        "- The second form is only used in Crafty.HashMap to save time for computing keys again, where keys were computed previously from obj. End users should not call this form directly."
+      ],
+      "example": [
+        "",
+        "~~~",
+        "Crafty.map.remove(e);",
+        "~~~"
+      ]
+    },
+    {
+      "name": "Crafty.HashMap.refresh",
+      "comp": "Crafty.HashMap",
+      "sign": "public void Crafty.map.remove(Entry entry)",
+      "param": "entry - An entry to update",
+      "doc": "Refresh an entry's keys, and its position in the broad phrase map.",
+      "example": [
+        "",
+        "~~~",
+        "Crafty.map.refresh(e);",
+        "~~~"
+      ]
+    },
+    {
+      "name": "Crafty.HashMap.boundaries",
+      "comp": "Crafty.HashMap",
+      "sign": "public Object Crafty.map.boundaries()",
+      "doc": [
+        "The return `Object` is of the following format.",
+        "~~~",
+        "{",
+        "  min: {",
+        "    x: val_x,",
+        "    y: val_y",
+        "  },",
+        "  max: {",
+        "    x: val_x,",
+        "    y: val_y",
+        "  }",
+        "}",
+        "~~~"
+      ]
+    },
+    {
+      "name": "Crafty.HashMap.key",
+      "comp": "Crafty.HashMap",
+      "sign": "public Object Crafty.HashMap.key(Object obj)",
+      "param": "obj - an Object that has .mbr() or _x, _y, _w and _h.",
+      "doc": [
+        "Get the rectangular region (in terms of the grid, with grid size `cellsize`), where the object may fall in. This region is determined by the object's bounding box.",
+        "The `cellsize` is 64 by default."
+      ],
+      "see": "Crafty.HashMap.constructor"
+    }
+  ],
+  "2D.js": [
+    {
+      "name": "Crafty.map",
+      "category": "2D",
+      "doc": "Functions related with querying entities.",
+      "see": "Crafty.HashMap"
+    },
+    {
+      "name": "2D",
+      "category": "2D",
+      "doc": "Component for any entity that has a position on the stage.",
+      "trigger": [
+        "Move - when the entity has moved - { _x:Number, _y:Number, _w:Number, _h:Number } - Old position",
+        "Invalidate - when the entity needs to be redrawn",
+        "Rotate - when the entity is rotated - { cos:Number, sin:Number, deg:Number, rad:Number, o: {x:Number, y:Number}}"
+      ]
+    },
+    {
+      "name": ".x",
+      "comp": "2D",
+      "doc": [
+        "The `x` position on the stage. When modified, will automatically be redrawn.",
+        "Is actually a getter/setter so when using this value for calculations and not modifying it,",
+        "use the `._x` property."
+      ],
+      "see": "._attr"
+    },
+    {
+      "name": ".y",
+      "comp": "2D",
+      "doc": [
+        "The `y` position on the stage. When modified, will automatically be redrawn.",
+        "Is actually a getter/setter so when using this value for calculations and not modifying it,",
+        "use the `._y` property."
+      ],
+      "see": "._attr"
+    },
+    {
+      "name": ".w",
+      "comp": "2D",
+      "doc": [
+        "The width of the entity. When modified, will automatically be redrawn.",
+        "Is actually a getter/setter so when using this value for calculations and not modifying it,",
+        "use the `._w` property.",
+        "Changing this value is not recommended as canvas has terrible resize quality and DOM will just clip the image."
+      ],
+      "see": "._attr"
+    },
+    {
+      "name": ".h",
+      "comp": "2D",
+      "doc": [
+        "The height of the entity. When modified, will automatically be redrawn.",
+        "Is actually a getter/setter so when using this value for calculations and not modifying it,",
+        "use the `._h` property.",
+        "Changing this value is not recommended as canvas has terrible resize quality and DOM will just clip the image."
+      ],
+      "see": "._attr"
+    },
+    {
+      "name": ".z",
+      "comp": "2D",
+      "doc": [
+        "The `z` index on the stage. When modified, will automatically be redrawn.",
+        "Is actually a getter/setter so when using this value for calculations and not modifying it,",
+        "use the `._z` property.",
+        "A higher `z` value will be closer to the front of the stage. A smaller `z` value will be closer to the back.",
+        "A global Z index is produced based on its `z` value as well as the GID (which entity was created first).",
+        "Therefore entities will naturally maintain order depending on when it was created if same z value.",
+        "`z` is required to be an integer, e.g. `z=11.2` is not allowed."
+      ],
+      "see": "._attr"
+    },
+    {
+      "name": ".rotation",
+      "comp": "2D",
+      "doc": [
+        "The rotation state of the entity, in clockwise degrees.",
+        "`this.rotation = 0` sets it to its original orientation; `this.rotation = 10`",
+        "sets it to 10 degrees clockwise from its original orientation;",
+        "`this.rotation = -10` sets it to 10 degrees counterclockwise from its",
+        "original orientation, etc.",
+        "When modified, will automatically be redrawn. Is actually a getter/setter",
+        "so when using this value for calculations and not modifying it,",
+        "use the `._rotation` property.",
+        "`this.rotation = 0` does the same thing as `this.rotation = 360` or `720` or",
+        "`-360` or `36000` etc. So you can keep increasing or decreasing the angle for continuous",
+        "rotation. (Numerical errors do not occur until you get to millions of degrees.)",
+        "The default is to rotate the entity around its (initial) top-left corner; use",
+        "`.origin()` to change that."
+      ],
+      "see": "._attr, .origin"
+    },
+    {
+      "name": ".alpha",
+      "comp": "2D",
+      "doc": "Transparency of an entity. Must be a decimal value between 0.0 being fully transparent to 1.0 being fully opaque."
+    },
+    {
+      "name": ".visible",
+      "comp": "2D",
+      "doc": [
+        "If the entity is visible or not. Accepts a true or false value.",
+        "Can be used for optimization by setting an entities visibility to false when not needed to be drawn.",
+        "The entity will still exist and can be collided with but just won't be drawn."
+      ],
+      "see": "Crafty.DrawManager.draw, Crafty.DrawManager.drawAll"
+    },
+    {
+      "name": "._globalZ",
+      "comp": "2D",
+      "doc": "When two entities overlap, the one with the larger `_globalZ` will be on top of the other.",
+      "see": "Crafty.DrawManager.draw, Crafty.DrawManager.drawAll"
+    },
+    {
+      "name": ".offsetBoundary",
+      "comp": "2D",
+      "doc": [
+        "Extends the MBR of the entity by a specified amount.",
+        "You would most likely use this function to ensure that custom canvas rendering beyond the extent of the entity's normal bounds is not clipped."
+      ],
+      "trigger": "BoundaryOffset - when the MBR offset changes",
+      "sign": [
+        "public this .offsetBoundary(Number dx1, Number dy1, Number dx2, Number dy2)",
+        "public this .offsetBoundary(Number offset)"
+      ],
+      "param": [
+        "dx1 - Extends the MBR to the left by this amount",
+        "dy1 - Extends the MBR upward by this amount",
+        "dx2 - Extends the MBR to the right by this amount",
+        "dy2 - Extends the MBR downward by this amount",
+        "offset - Extend the MBR in all directions by this amount"
+      ]
+    },
+    {
+      "name": ".area",
+      "comp": "2D",
+      "sign": "public Number .area(void)",
+      "doc": "Calculates the area of the entity"
+    },
+    {
+      "name": ".intersect",
+      "comp": "2D",
+      "sign": [
+        "public Boolean .intersect(Number x, Number y, Number w, Number h)",
+        "public Boolean .intersect(Object rect)"
+      ],
+      "param": [
+        "x - X position of the rect",
+        "y - Y position of the rect",
+        "w - Width of the rect",
+        "h - Height of the rect",
+        "rect - An object that must have the `x, y, w, h` values as properties"
+      ],
+      "doc": "Determines if this entity intersects a rectangle.  If the entity is rotated, its MBR is used for the test."
+    },
+    {
+      "name": ".within",
+      "comp": "2D",
+      "sign": [
+        "public Boolean .within(Number x, Number y, Number w, Number h)",
+        "public Boolean .within(Object rect)"
+      ],
+      "param": [
+        "x - X position of the rect",
+        "y - Y position of the rect",
+        "w - Width of the rect",
+        "h - Height of the rect",
+        "rect - An object that must have the `_x, _y, _w, _h` values as properties"
+      ],
+      "doc": "Determines if this current entity is within another rectangle."
+    },
+    {
+      "name": ".contains",
+      "comp": "2D",
+      "sign": [
+        "public Boolean .contains(Number x, Number y, Number w, Number h)",
+        "public Boolean .contains(Object rect)"
+      ],
+      "param": [
+        "x - X position of the rect",
+        "y - Y position of the rect",
+        "w - Width of the rect",
+        "h - Height of the rect",
+        "rect - An object that must have the `_x, _y, _w, _h` values as properties."
+      ],
+      "doc": "Determines if the rectangle is within the current entity.  If the entity is rotated, its MBR is used for the test."
+    },
+    {
+      "name": ".pos",
+      "comp": "2D",
+      "sign": "public Object .pos(void)",
+      "doc": [
+        "Returns the x, y, w, h properties as a rect object",
+        "(a rect object is just an object with the keys _x, _y, _w, _h).",
+        "The keys have an underscore prefix. This is due to the x, y, w, h",
+        "properties being merely setters and getters that wrap the properties with an underscore (_x, _y, _w, _h)."
+      ]
+    },
+    {
+      "name": ".mbr",
+      "comp": "2D",
+      "sign": "public Object .mbr()",
+      "doc": [
+        "Returns the minimum bounding rectangle. If there is no rotation",
+        "on the entity it will return the rect."
+      ]
+    },
+    {
+      "name": ".isAt",
+      "comp": "2D",
+      "sign": "public Boolean .isAt(Number x, Number y)",
+      "param": [
+        "x - X position of the point",
+        "y - Y position of the point"
+      ],
+      "doc": [
+        "Determines whether a point is contained by the entity. Unlike other methods,",
+        "an object can't be passed. The arguments require the x and y value.",
+        "The given point is tested against the first of the following that exists: a mapArea associated with \"Mouse\", the hitarea associated with \"Collision\", or the object's MBR."
+      ]
+    },
+    {
+      "name": ".move",
+      "comp": "2D",
+      "sign": "public this .move(String dir, Number by)",
+      "param": [
+        "dir - Direction to move (n,s,e,w,ne,nw,se,sw)",
+        "by - Amount to move in the specified direction"
+      ],
+      "doc": "Quick method to move the entity in a direction (n, s, e, w, ne, nw, se, sw) by an amount of pixels."
+    },
+    {
+      "name": ".shift",
+      "comp": "2D",
+      "sign": "public this .shift(Number x, Number y, Number w, Number h)",
+      "param": [
+        "x - Amount to move X",
+        "y - Amount to move Y",
+        "w - Amount to widen",
+        "h - Amount to increase height"
+      ],
+      "doc": [
+        "Shift or move the entity by an amount. Use negative values",
+        "for an opposite direction."
+      ]
+    },
+    {
+      "name": "._cascade",
+      "comp": "2D",
+      "sign": "public void ._cascade(e)",
+      "param": "e - An object describing the motion",
+      "doc": [
+        "Move or rotate the entity's children according to a certain motion.",
+        "This method is part of a function bound to \"Move\": It is used",
+        "internally for ensuring that when a parent moves, the child also",
+        "moves in the same way."
+      ]
+    },
+    {
+      "name": ".attach",
+      "comp": "2D",
+      "sign": "public this .attach(Entity obj[, .., Entity objN])",
+      "param": "obj - Child entity(s) to attach",
+      "doc": [
+        "Sets one or more entities to be children, with the current entity (`this`)",
+        "as the parent. When the parent moves or rotates, its children move or",
+        "rotate by the same amount. (But not vice-versa: If you move a child, it",
+        "will not move the parent.) When the parent is destroyed, its children are",
+        "destroyed.",
+        "For any entity, `this._children` is the array of its children entity",
+        "objects (if any), and `this._parent` is its parent entity object (if any).",
+        "As many objects as wanted can be attached, and a hierarchy of objects is",
+        "possible by attaching."
+      ]
+    },
+    {
+      "name": ".detach",
+      "comp": "2D",
+      "sign": "public this .detach([Entity obj])",
+      "param": "obj - The entity to detach. Left blank will remove all attached entities",
+      "doc": [
+        "Stop an entity from following the current entity. Passing no arguments will stop",
+        "every entity attached."
+      ]
+    },
+    {
+      "name": ".origin",
+      "comp": "2D",
+      "sign": [
+        "public this .origin(Number x, Number y)",
+        "public this .origin(String offset)"
+      ],
+      "param": [
+        "x - Pixel value of origin offset on the X axis",
+        "y - Pixel value of origin offset on the Y axis",
+        "offset - Combination of center, top, bottom, middle, left and right"
+      ],
+      "doc": "Set the origin point of an entity for it to rotate around.",
+      "example": [
+        "",
+        "~~~",
+        "this.origin(\"top left\")",
+        "this.origin(\"center\")",
+        "this.origin(\"bottom right\")",
+        "this.origin(\"middle right\")",
+        "~~~"
+      ],
+      "see": ".rotation"
+    },
+    {
+      "name": ".flip",
+      "comp": "2D",
+      "trigger": "Invalidate - when the entity has flipped",
+      "sign": "public this .flip(String dir)",
+      "param": "dir - Flip direction",
+      "doc": "Flip entity on passed direction",
+      "example": [
+        "",
+        "~~~",
+        "this.flip(\"X\")",
+        "~~~"
+      ]
+    },
+    {
+      "name": ".unflip",
+      "comp": "2D",
+      "trigger": "Invalidate - when the entity has unflipped",
+      "sign": "public this .unflip(String dir)",
+      "param": "dir - Unflip direction",
+      "doc": "Unflip entity on passed direction (if it's flipped)",
+      "example": [
+        "",
+        "~~~",
+        "this.unflip(\"X\")",
+        "~~~"
+      ]
+    },
+    {
+      "name": "._attr",
+      "comp": "2D",
+      "doc": [
+        "Setter method for all 2D properties including",
+        "x, y, w, h, alpha, rotation and visible."
+      ]
+    },
+    {
+      "name": "Gravity",
+      "category": "2D",
+      "trigger": "Moved - When entity has moved on y-axis a Moved event is triggered with an object specifying the old position {x: old_x, y: old_y}",
+      "doc": "Adds gravitational pull to the entity."
+    },
+    {
+      "name": ".gravity",
+      "comp": "Gravity",
+      "sign": "public this .gravity([comp])",
+      "param": "comp - The name of a component that will stop this entity from falling",
+      "doc": [
+        "Enable gravity for this entity no matter whether comp parameter is not specified,",
+        "If comp parameter is specified all entities with that component will stop this entity from falling.",
+        "For a player entity in a platform game this would be a component that is added to all entities",
+        "that the player should be able to walk on."
+      ],
+      "example": [
+        "",
+        "~~~",
+        "Crafty.e(\"2D, DOM, Color, Gravity\")",
+        "  .color(\"red\")",
+        "  .attr({ w: 100, h: 100 })",
+        "  .gravity(\"platform\");",
+        "~~~"
+      ]
+    },
+    {
+      "name": ".gravityConst",
+      "comp": "Gravity",
+      "sign": "public this .gravityConst(g)",
+      "param": "g - gravitational constant",
+      "doc": "Set the gravitational constant to g. The default is .2. The greater g, the faster the object falls.",
+      "example": [
+        "",
+        "~~~",
+        "Crafty.e(\"2D, DOM, Color, Gravity\")",
+        "  .color(\"red\")",
+        "  .attr({ w: 100, h: 100 })",
+        "  .gravity(\"platform\")",
+        "  .gravityConst(2)",
+        "~~~"
+      ]
+    },
+    {
+      "name": ".antigravity",
+      "comp": "Gravity",
+      "sign": "public this .antigravity()",
+      "doc": "Disable gravity for this component. It can be reenabled by calling .gravity()"
+    },
+    {
+      "name": "Crafty.polygon",
+      "category": "2D",
+      "doc": [
+        "Polygon object used for hitboxes and click maps. Must pass an Array for each point as an",
+        "argument where index 0 is the x position and index 1 is the y position.",
+        "For example one point of a polygon will look like this: `[0,5]` where the `x` is `0` and the `y` is `5`.",
+        "Can pass an array of the points or simply put each point as an argument.",
+        "When creating a polygon for an entity, each point should be offset or relative from the entities `x` and `y`",
+        "(don't include the absolute values as it will automatically calculate this)."
+      ],
+      "example": [
+        "",
+        "~~~",
+        "new Crafty.polygon([50,0],[100,100],[0,100]);",
+        "new Crafty.polygon([[50,0],[100,100],[0,100]]);",
+        "~~~"
+      ]
+    },
+    {
+      "name": ".containsPoint",
+      "comp": "Crafty.polygon",
+      "sign": "public Boolean .containsPoint(Number x, Number y)",
+      "param": [
+        "x - X position of the point",
+        "y - Y position of the point"
+      ],
+      "doc": "Method is used to determine if a given point is contained by the polygon.",
+      "example": [
+        "",
+        "~~~",
+        "var poly = new Crafty.polygon([50,0],[100,100],[0,100]);",
+        "poly.containsPoint(50, 50); //TRUE",
+        "poly.containsPoint(0, 0); //FALSE",
+        "~~~"
+      ]
+    },
+    {
+      "name": ".shift",
+      "comp": "Crafty.polygon",
+      "sign": "public void .shift(Number x, Number y)",
+      "param": [
+        "x - Amount to shift the `x` axis",
+        "y - Amount to shift the `y` axis"
+      ],
+      "doc": "Shifts every single point in the polygon by the specified amount.",
+      "example": [
+        "",
+        "~~~",
+        "var poly = new Crafty.polygon([50,0],[100,100],[0,100]);",
+        "poly.shift(5,5);",
+        "//[[55,5], [105,5], [5,105]];",
+        "~~~"
+      ]
+    },
+    {
+      "name": "Crafty.circle",
+      "category": "2D",
+      "doc": "Circle object used for hitboxes and click maps. Must pass a `x`, a `y` and a `radius` value.",
+      "example": [
+        "",
+        "~~~",
+        "var centerX = 5,",
+        "    centerY = 10,",
+        "    radius = 25;",
+        "new Crafty.circle(centerX, centerY, radius);",
+        "~~~",
+        "When creating a circle for an entity, each point should be offset or relative from the entities `x` and `y`",
+        "(don't include the absolute values as it will automatically calculate this)."
+      ]
+    },
+    {
+      "name": ".containsPoint",
+      "comp": "Crafty.circle",
+      "sign": "public Boolean .containsPoint(Number x, Number y)",
+      "param": [
+        "x - X position of the point",
+        "y - Y position of the point"
+      ],
+      "doc": "Method is used to determine if a given point is contained by the circle.",
+      "example": [
+        "",
+        "~~~",
+        "var circle = new Crafty.circle(0, 0, 10);",
+        "circle.containsPoint(0, 0); //TRUE",
+        "circle.containsPoint(50, 50); //FALSE",
+        "~~~"
+      ]
+    },
+    {
+      "name": ".shift",
+      "comp": "Crafty.circle",
+      "sign": "public void .shift(Number x, Number y)",
+      "param": [
+        "x - Amount to shift the `x` axis",
+        "y - Amount to shift the `y` axis"
+      ],
+      "doc": "Shifts the circle by the specified amount.",
+      "example": [
+        "",
+        "~~~",
+        "var circle = new Crafty.circle(0, 0, 10);",
+        "circle.shift(5,5);",
+        "//{x: 5, y: 5, radius: 10};",
+        "~~~"
+      ]
+    }
+  ],
+  "scenes.js": [
+    {
+      "name": "Crafty.scene",
+      "category": "Scenes, Stage",
+      "trigger": [
+        "SceneChange - just before a new scene is initialized - { oldScene:String, newScene:String }",
+        "SceneDestroy - just before the current scene is destroyed - { newScene:String  }"
+      ],
+      "sign": [
+        "public void Crafty.scene(String sceneName, Function init[, Function uninit])",
+        "public void Crafty.scene(String sceneName[, Data])"
+      ],
+      "param": [
+        "sceneName - Name of the scene to add",
+        "init - Function to execute when scene is played",
+        "uninit - Function to execute before next scene is played, after entities with `2D` are destroyed",
+        "sceneName - Name of scene to play",
+        "Data - The init function of the scene will be called with this data as its parameter.  Can be of any type other than a function."
+      ],
+      "doc": [
+        "This is equivalent to calling `Crafty.defineScene`.",
+        "This is equivalent to calling `Crafty.enterScene`.",
+        "Method to create scenes on the stage. Pass an ID and function to register a scene.",
+        "To play a scene, just pass the ID. When a scene is played, all",
+        "previously-created entities with the `2D` component are destroyed. The",
+        "viewport is also reset.",
+        "You can optionally specify an arugment that will be passed to the scene's init function.",
+        "If you want some entities to persist over scenes (as in, not be destroyed)",
+        "simply add the component `Persist`."
+      ],
+      "example": [
+        "",
+        "~~~",
+        "Crafty.defineScene(\"loading\", function() {",
+        "    Crafty.background(\"#000\");",
+        "    Crafty.e(\"2D, DOM, Text\")",
+        "          .attr({ w: 100, h: 20, x: 150, y: 120 })",
+        "          .text(\"Loading\")",
+        "          .css({ \"text-align\": \"center\"})",
+        "          .textColor(\"#FFFFFF\");",
+        "});",
+        "Crafty.defineScene(\"UFO_dance\",",
+        "             function() {Crafty.background(\"#444\"); Crafty.e(\"UFO\");},",
+        "             function() {...send message to server...});",
+        "// An example of an init function which accepts arguments, in this case an object.",
+        "Crafty.defineScene(\"square\", function(attributes) {",
+        "    Crafty.background(\"#000\");",
+        "    Crafty.e(\"2D, DOM, Color\")",
+        "          .attr(attributes)",
+        "          .color(\"red\");",
+        "});",
+        "~~~",
+        "This defines (but does not play) two scenes as discussed below.",
+        "~~~",
+        "Crafty.enterScene(\"loading\");",
+        "~~~",
+        "This command will clear the stage by destroying all `2D` entities (except",
+        "those with the `Persist` component). Then it will set the background to",
+        "black and display the text \"Loading\".",
+        "~~~",
+        "Crafty.enterScene(\"UFO_dance\");",
+        "~~~",
+        "This command will clear the stage by destroying all `2D` entities (except",
+        "those with the `Persist` component). Then it will set the background to",
+        "gray and create a UFO entity. Finally, the next time the game encounters",
+        "another command of the form `Crafty.scene(scene_name)` (if ever), then the",
+        "game will send a message to the server.",
+        "~~~",
+        "Crafty.enterScene(\"square\", {x:10, y:10, w:20, h:20});",
+        "~~~",
+        "This will clear the stage, set the background black, and create a red square with the specified position and dimensions.",
+        "~~~"
+      ]
+    }
+  ],
+  "collision.js": [
+    {
+      "name": "Collision",
+      "category": "2D",
+      "doc": "Component to detect collision between any two convex polygons."
+    },
+    {
+      "name": ".init",
+      "comp": "Collision",
+      "doc": [
+        "Create a rectangle polygon based on the x, y, w, h dimensions.",
+        "By default, the collision hitbox will match the dimensions (x, y, w, h) and rotation of the object."
+      ]
+    },
+    {
+      "name": ".collision",
+      "comp": "Collision",
+      "trigger": "NewHitbox - when a new hitbox is assigned - Crafty.polygon",
+      "sign": [
+        "public this .collision([Crafty.polygon polygon])",
+        "public this .collision(Array point1, .., Array pointN)"
+      ],
+      "param": [
+        "polygon - Crafty.polygon object that will act as the hit area",
+        "point# - Array with an `x` and `y` position to generate a polygon"
+      ],
+      "doc": [
+        "Constructor takes a polygon or array of points to use as the hit area.",
+        "The hit area (polygon) must be a convex shape and not concave",
+        "for the collision detection to work.",
+        "Points are relative to the object's position and its unrotated state.",
+        "If no parameter is passed, the x, y, w, h properties of the entity will be used, and the hitbox will be resized when the entity is.",
+        "If a hitbox is set that is outside of the bounds of the entity itself, there will be a small performance penalty as it is tracked separately."
+      ],
+      "example": [
+        "",
+        "~~~",
+        "Crafty.e(\"2D, Collision\").collision(",
+        "    new Crafty.polygon([50,0], [100,100], [0,100])",
+        ");",
+        "Crafty.e(\"2D, Collision\").collision([50,0], [100,100], [0,100]);",
+        "~~~"
+      ],
+      "see": "Crafty.polygon"
+    },
+    {
+      "name": ".hit",
+      "comp": "Collision",
+      "sign": "public Boolean/Array hit(String component)",
+      "param": "component - Check collision with entities that has this component",
+      "return": "`false` if no collision. If a collision is detected, returns an Array of objects that are colliding.",
+      "doc": [
+        "Takes an argument for a component to test collision for. If a collision is found, an array of",
+        "every object in collision along with the amount of overlap is passed.",
+        "If no collision, will return false. The return collision data will be an Array of Objects with the",
+        "type of collision used, the object collided and if the type used was SAT (a polygon was used as the hitbox) then an amount of overlap.\\",
+        "~~~",
+        "[{",
+        "   obj: [entity],",
+        "   type: \"MBR\" or \"SAT\",",
+        "   overlap: [number]",
+        "}]",
+        "~~~",
+        "`MBR` is your standard axis aligned rectangle intersection (`.intersect` in the 2D component).",
+        "`SAT` is collision between any convex polygon."
+      ],
+      "see": ".onHit, 2D"
+    },
+    {
+      "name": ".onHit",
+      "comp": "Collision",
+      "sign": "public this .onHit(String component, Function hit[, Function noHit])",
+      "param": [
+        "component - Component to check collisions for",
+        "hit - Callback method to execute upon collision with component.  Will be passed the results of the collision check in the same format documented for hit().",
+        "noHit - Callback method executed once as soon as collision stops"
+      ],
+      "doc": "Creates an EnterFrame event calling .hit() each frame.  When a collision is detected the callback will be invoked.",
+      "see": ".hit"
+    }
+  ],
+  "DOM.js": [
+    {
+      "name": "DOM",
+      "category": "Graphics",
+      "doc": "Draws entities as DOM nodes, specifically `<DIV>`s."
+    },
+    {
+      "name": "._element",
+      "comp": "DOM",
+      "doc": "The DOM element used to represent the entity."
+    },
+    {
+      "name": ".avoidCss3dTransforms",
+      "comp": "DOM",
+      "doc": "Avoids using of CSS 3D Transform for positioning when true. Default value is false."
+    },
+    {
+      "name": ".getDomId",
+      "comp": "DOM",
+      "sign": "public this .getId()",
+      "doc": "Get the Id of the DOM element used to represent the entity."
+    },
+    {
+      "name": ".DOM",
+      "comp": "DOM",
+      "trigger": "Draw - when the entity is ready to be drawn to the stage - { style:String, type:\"DOM\", co}",
+      "sign": "public this .DOM(HTMLElement elem)",
+      "param": "elem - HTML element that will replace the dynamically created one",
+      "doc": "Pass a DOM element to use rather than one created. Will set `._element` to this value. Removes the old element."
+    },
+    {
+      "name": ".draw",
+      "comp": "DOM",
+      "sign": "public this .draw(void)",
+      "doc": "Updates the CSS properties of the node to draw on the stage."
+    },
+    {
+      "name": ".undraw",
+      "comp": "DOM",
+      "sign": "public this .undraw(void)",
+      "doc": "Removes the element from the stage."
+    },
+    {
+      "name": ".css",
+      "comp": "DOM",
+      "sign": [
+        "public css(String property, String value)",
+        "public  css(Object map)"
+      ],
+      "param": [
+        "property - CSS property to modify",
+        "value - Value to give the CSS property",
+        "map - Object where the key is the CSS property and the value is CSS value"
+      ],
+      "doc": [
+        "Apply CSS styles to the element.",
+        "Can pass an object where the key is the style property and the value is style value.",
+        "For setting one style, simply pass the style as the first argument and the value as the second.",
+        "The notation can be CSS or JS (e.g. `text-align` or `textAlign`).",
+        "To return a value, pass the property.",
+        "Note: For entities with \"Text\" component, some css properties are controlled by separate functions",
+        "`.textFont()` and `.textColor()`, and ignore `.css()` settings. See Text component for details."
+      ],
+      "example": [
+        "",
+        "~~~",
+        "this.css({'text-align', 'center', 'text-decoration': 'line-through'});",
+        "this.css(\"textAlign\", \"center\");",
+        "this.css(\"text-align\"); //returns center",
+        "~~~"
+      ]
+    },
+    {
+      "name": "Crafty.DOM",
+      "category": "Graphics",
+      "doc": "Collection of utilities for using the DOM."
+    },
+    {
+      "name": "Crafty.DOM.window",
+      "comp": "Crafty.DOM",
+      "doc": [
+        "Object with `width` and `height` values representing the width",
+        "and height of the `window`."
+      ]
+    },
+    {
+      "name": "Crafty.DOM.inner",
+      "comp": "Crafty.DOM",
+      "sign": "public Object Crafty.DOM.inner(HTMLElement obj)",
+      "param": "obj - HTML element to calculate the position",
+      "doc": [
+        "Find a DOM elements position including",
+        "padding and border."
+      ]
+    },
+    {
+      "name": "Crafty.DOM.getStyle",
+      "comp": "Crafty.DOM",
+      "sign": "public Object Crafty.DOM.getStyle(HTMLElement obj, String property)",
+      "param": [
+        "obj - HTML element to find the style",
+        "property - Style to return"
+      ],
+      "doc": [
+        "Determine the value of a style on an HTML element. Notation can be",
+        "in either CSS or JS."
+      ]
+    },
+    {
+      "name": "Crafty.DOM.translate",
+      "comp": "Crafty.DOM",
+      "sign": "public Object Crafty.DOM.translate(Number clientX, Number clientY)",
+      "param": [
+        "clientX - clientX position in the browser screen",
+        "clientY - clientY position in the browser screen"
+      ],
+      "return": "Object `{x: ..., y: ...}` with Crafty coordinates.",
+      "doc": [
+        "The parameters clientX and clientY are pixel coordinates within the visible",
+        "browser window. This function translates those to Crafty coordinates (i.e.,",
+        "the coordinates that you might apply to an entity), by taking into account",
+        "where the stage is within the screen, what the current viewport is, etc."
+      ]
+    }
+  ],
+  "html.js": [
+    {
+      "name": "HTML",
+      "category": "Graphics",
+      "doc": "Component allow for insertion of arbitrary HTML into an entity"
+    },
+    {
+      "name": ".replace",
+      "comp": "HTML",
+      "sign": "public this .replace(String html)",
+      "param": "html - arbitrary html",
+      "doc": "This method will replace the content of this entity with the supplied html",
+      "example": [
+        "",
+        "Create a link",
+        "~~~",
+        "Crafty.e(\"HTML\")",
+        "   .attr({x:20, y:20, w:100, h:100})",
+        "   .replace(\"<a href='index.html'>Index</a>\");",
+        "~~~"
+      ]
+    },
+    {
+      "name": ".append",
+      "comp": "HTML",
+      "sign": "public this .append(String html)",
+      "param": "html - arbitrary html",
+      "doc": "This method will add the supplied html in the end of the entity",
+      "example": [
+        "",
+        "Create a link",
+        "~~~",
+        "Crafty.e(\"HTML\")",
+        "   .attr({x:20, y:20, w:100, h:100})",
+        "   .append(\"<a href='index.html'>Index</a>\");",
+        "~~~"
+      ]
+    },
+    {
+      "name": ".prepend",
+      "comp": "HTML",
+      "sign": "public this .prepend(String html)",
+      "param": "html - arbitrary html",
+      "doc": "This method will add the supplied html in the beginning of the entity",
+      "example": [
+        "",
+        "Create a link",
+        "~~~",
+        "Crafty.e(\"HTML\")",
+        "   .attr({x:20, y:20, w:100, h:100})",
+        "   .prepend(\"<a href='index.html'>Index</a>\");",
+        "~~~"
+      ]
+    }
+  ],
+  "storage.js": [
+    {
+      "name": "Storage",
+      "category": "Utilities",
+      "doc": "Very simple way to get and set values, which will persist when the browser is closed also."
+    },
+    {
+      "name": ".storage",
+      "comp": "Storage",
+      "sign": [
+        ".storage(String key)",
+        ".storage(String key, String value)",
+        ".storage(String key, [Object value, Array value, Boolean value])"
+      ],
+      "param": [
+        "key - a key you would like to get from the storage. It will return null if the key does not exists.",
+        "key - the key you would like to save the data under.",
+        "value - the value you would like to save.",
+        "key - the key you would like to save the data under.",
+        "value - the value you would like to save, can be an Object or an Array."
+      ],
+      "doc": [
+        "Storage function is very simple and can be used to either get or set values.",
+        "You can store both booleans, strings, objects and arrays.",
+        "Please note: You should not store data, while the game is playing, as it can cause the game to slow down. You should load data when you start the game, or when the user for an example click a \"Save gameprocess\" button."
+      ],
+      "example": [
+        "",
+        "Get an already stored value",
+        "~~~",
+        "var playername = Crafty.storage('playername');",
+        "~~~",
+        null,
+        "Save a value",
+        "~~~",
+        "Crafty.storage('playername', 'Hero');",
+        "~~~",
+        null,
+        "Test to see if a value is already there.",
+        "~~~",
+        "var heroname = Crafty.storage('name');",
+        "if(!heroname){",
+        "  // Maybe ask the player what their name is here",
+        "  heroname = 'Guest';",
+        "}",
+        "// Do something with heroname",
+        "~~~"
+      ]
+    },
+    {
+      "name": ".storage.remove",
+      "comp": "Storage",
+      "sign": ".storage.remove(String key)",
+      "param": "key - a key where you will like to delete the value of.",
+      "doc": [
+        "Generally you do not need to remove values from localStorage, but if you do",
+        "store large amount of text, or want to unset something you can do that with",
+        "this function."
+      ],
+      "example": [
+        "",
+        "Get an already stored value",
+        "~~~",
+        "Crafty.storage.remove('playername');",
+        "~~~"
+      ]
+    }
+  ],
+  "extensions.js": [
+    {
+      "name": "Crafty.support",
+      "category": "Misc, Core",
+      "doc": "Determines feature support for what Crafty can do."
+    },
+    {
+      "name": "Crafty.mobile",
+      "comp": "Crafty.support",
+      "doc": [
+        "Determines if Crafty is running on mobile device.",
+        "If Crafty.mobile is equal true Crafty does some things under hood:",
+        "~~~",
+        "- set viewport on max device width and height",
+        "- set Crafty.stage.fullscreen on true",
+        "- hide window scrollbars",
+        "~~~"
+      ],
+      "see": "Crafty.viewport"
+    },
+    {
+      "name": "Crafty.support.setter",
+      "comp": "Crafty.support",
+      "doc": "Is `__defineSetter__` supported?"
+    },
+    {
+      "name": "Crafty.support.defineProperty",
+      "comp": "Crafty.support",
+      "doc": "Is `Object.defineProperty` supported?"
+    },
+    {
+      "name": "Crafty.support.audio",
+      "comp": "Crafty.support",
+      "doc": "Is HTML5 `Audio` supported?"
+    },
+    {
+      "name": "Crafty.support.prefix",
+      "comp": "Crafty.support",
+      "doc": "Returns the browser specific prefix (`Moz`, `O`, `ms`, `webkit`)."
+    },
+    {
+      "name": "Crafty.support.versionName",
+      "comp": "Crafty.support",
+      "doc": "Version of the browser"
+    },
+    {
+      "name": "Crafty.support.version",
+      "comp": "Crafty.support",
+      "doc": "Version number of the browser as an Integer (first number)"
+    },
+    {
+      "name": "Crafty.support.canvas",
+      "comp": "Crafty.support",
+      "doc": "Is the `canvas` element supported?"
+    },
+    {
+      "name": "Crafty.support.webgl",
+      "comp": "Crafty.support",
+      "doc": "Is WebGL supported on the canvas element?"
+    },
+    {
+      "name": "Crafty.support.css3dtransform",
+      "comp": "Crafty.support",
+      "doc": "Is css3Dtransform supported by browser."
+    },
+    {
+      "name": "Crafty.support.deviceorientation",
+      "comp": "Crafty.support",
+      "doc": "Is deviceorientation event supported by browser."
+    },
+    {
+      "name": "Crafty.support.devicemotion",
+      "comp": "Crafty.support",
+      "doc": "Is devicemotion event supported by browser."
+    },
+    {
+      "name": "Crafty.addEvent",
+      "category": "Events, Misc",
+      "sign": "public this Crafty.addEvent(Object ctx, HTMLElement obj, String event, Function callback)",
+      "param": [
+        "ctx - Context of the callback or the value of `this`",
+        "obj - Element to add the DOM event to",
+        "event - Event name to bind to",
+        "callback - Method to execute when triggered"
+      ],
+      "doc": [
+        "Adds DOM level 3 events to elements. The arguments it accepts are the call",
+        "context (the value of `this`), the DOM element to attach the event to,",
+        "the event name (without `on` (`click` rather than `onclick`)) and",
+        "finally the callback method.",
+        "If no element is passed, the default element will be `window.document`.",
+        "Callbacks are passed with event data."
+      ],
+      "example": [
+        "",
+        "Will add a stage-wide MouseDown event listener to the player. Will log which button was pressed",
+        "& the (x,y) coordinates in viewport/world/game space.",
+        "~~~",
+        "var player = Crafty.e(\"2D\");",
+        "    player.onMouseDown = function(e) {",
+        "        console.log(e.mouseButton, e.realX, e.realY);",
+        "    };",
+        "Crafty.addEvent(player, Crafty.stage.elem, \"mousedown\", player.onMouseDown);",
+        "~~~"
+      ],
+      "see": "Crafty.removeEvent"
+    },
+    {
+      "name": "Crafty.removeEvent",
+      "category": "Events, Misc",
+      "sign": "public this Crafty.removeEvent(Object ctx, HTMLElement obj, String event, Function callback)",
+      "param": [
+        "ctx - Context of the callback or the value of `this`",
+        "obj - Element the event is on",
+        "event - Name of the event",
+        "callback - Method executed when triggered"
+      ],
+      "doc": [
+        "Removes events attached by `Crafty.addEvent()`. All parameters must",
+        "be the same that were used to attach the event including a reference",
+        "to the callback method."
+      ],
+      "see": "Crafty.addEvent"
+    },
+    {
+      "name": "Crafty.background",
+      "category": "Graphics, Stage",
+      "sign": "public void Crafty.background(String value)",
+      "param": "style - Modify the background with a color or image",
+      "doc": [
+        "This method is a shortcut for adding a background",
+        "style to the stage element, i.e.",
+        "`Crafty.stage.elem.style.background = ...`",
+        "For example, if you want the background to be white,",
+        "with an image in the center, you might use:",
+        "~~~",
+        "Crafty.background('#FFFFFF url(landscape.png) no-repeat center center');",
+        "~~~"
+      ]
+    }
+  ],
+  "viewport.js": [
+    {
+      "name": "Crafty.viewport",
+      "category": "Stage",
+      "trigger": [
+        "ViewportScroll - when the viewport's x or y coordinates change",
+        "ViewportScale - when the viewport's scale changes",
+        "ViewportResize - when the viewport's dimension's change",
+        "InvalidateViewport - when the viewport changes",
+        "StopCamera - when any camera animations should stop, such as at the start of a new animation.",
+        "CameraAnimationDone - when a camera animation comes reaches completion"
+      ],
+      "doc": [
+        "Viewport is essentially a 2D camera looking at the stage. Can be moved or zoomed, which",
+        "in turn will react just like a camera moving in that direction.",
+        "Tip: At any given moment, the stuff that you can see is...",
+        "`x` between `(-Crafty.viewport._x)` and `(-Crafty.viewport._x + (Crafty.viewport._width / Crafty.viewport._scale))`",
+        "`y` between `(-Crafty.viewport._y)` and `(-Crafty.viewport._y + (Crafty.viewport._height / Crafty.viewport._scale))`"
+      ]
+    },
+    {
+      "name": "Crafty.viewport.clampToEntities",
+      "comp": "Crafty.viewport",
+      "doc": [
+        "Decides if the viewport functions should clamp to game entities.",
+        "When set to `true` functions such as Crafty.viewport.mouselook() will not allow you to move the",
+        "viewport over areas of the game that has no entities.",
+        "For development it can be useful to set this to false."
+      ]
+    },
+    {
+      "name": "Crafty.viewport.x",
+      "comp": "Crafty.viewport",
+      "doc": [
+        "Will move the stage and therefore every visible entity along the `x`",
+        "axis in the opposite direction.",
+        "When this value is set, it will shift the entire stage. This means that entity",
+        "positions are not exactly where they are on screen. To get the exact position,",
+        "simply add `Crafty.viewport.x` onto the entities `x` position."
+      ]
+    },
+    {
+      "name": "Crafty.viewport.y",
+      "comp": "Crafty.viewport",
+      "doc": [
+        "Will move the stage and therefore every visible entity along the `y`",
+        "axis in the opposite direction.",
+        "When this value is set, it will shift the entire stage. This means that entity",
+        "positions are not exactly where they are on screen. To get the exact position,",
+        "simply add `Crafty.viewport.y` onto the entities `y` position."
+      ]
+    },
+    {
+      "name": "Crafty.viewport._scale",
+      "comp": "Crafty.viewport",
+      "doc": [
+        "This value is the current scale (zoom) of the viewport. When the value is bigger than 1, everything",
+        "looks bigger (zoomed in). When the value is less than 1, everything looks smaller (zoomed out). This",
+        "does not alter the size of the stage itself, just the magnification of what it shows.",
+        "This is a read-only property: Do not set it directly. Instead, use `Crafty.viewport.scale(...)`",
+        "or `Crafty.viewport.zoom(...)`"
+      ]
+    },
+    {
+      "name": "Crafty.viewport.bounds",
+      "comp": "Crafty.viewport",
+      "doc": [
+        "A rectangle which defines the bounds of the viewport.",
+        "It should be an object with two properties, `max` and `min`,",
+        "which are each an object with `x` and `y` properties.",
+        "If this property is null, Crafty uses the bounding box of all the items",
+        "on the stage.  This is the initial value.  (To prevent this behavior, set `Crafty.viewport.clampToEntities` to `false`)",
+        "If you wish to bound the viewport along one axis but not the other, you can use `-Infinity` and `+Infinity` as bounds."
+      ],
+      "see": "Crafty.viewport.clampToEntities",
+      "example": [
+        "",
+        "Set the bounds to a 500 by 500 square:",
+        "~~~",
+        "Crafty.viewport.bounds = {min:{x:0, y:0}, max:{x:500, y:500}};",
+        "~~~"
+      ]
+    },
+    {
+      "name": "Crafty.viewport.scroll",
+      "comp": "Crafty.viewport",
+      "sign": "Crafty.viewport.scroll(String axis, Number val)",
+      "param": [
+        "axis - 'x' or 'y'",
+        "val - The new absolute position on the axis"
+      ],
+      "doc": "Will move the viewport to the position given on the specified axis",
+      "example": [
+        "",
+        "Will move the camera 500 pixels right of its initial position, in effect",
+        "shifting everything in the viewport 500 pixels to the left.",
+        "~~~",
+        "Crafty.viewport.scroll('_x', 500);",
+        "~~~"
+      ]
+    },
+    {
+      "name": "Crafty.viewport.pan",
+      "comp": "Crafty.viewport",
+      "sign": "public void Crafty.viewport.pan(String axis, Number v, Number time)",
+      "param": [
+        "String axis - 'x' or 'y'. The axis to move the camera on",
+        "Number v - the distance to move the camera by",
+        "Number time - The duration in ms for the entire camera movement"
+      ],
+      "doc": "Pans the camera a given number of pixels over the specified time"
+    },
+    {
+      "name": "Crafty.viewport.follow",
+      "comp": "Crafty.viewport",
+      "sign": "public void Crafty.viewport.follow(Object target, Number offsetx, Number offsety)",
+      "param": [
+        "Object target - An entity with the 2D component",
+        "Number offsetx - Follow target should be offsetx pixels away from center",
+        "Number offsety - Positive puts target to the right of center"
+      ],
+      "doc": [
+        "Follows a given entity with the 2D component. If following target will take a portion of",
+        "the viewport out of bounds of the world, following will stop until the target moves away."
+      ],
+      "example": [
+        "",
+        "~~~",
+        "var ent = Crafty.e('2D, DOM').attr({w: 100, h: 100:});",
+        "Crafty.viewport.follow(ent, 0, 0);",
+        "~~~"
+      ]
+    },
+    {
+      "name": "Crafty.viewport.centerOn",
+      "comp": "Crafty.viewport",
+      "sign": "public void Crafty.viewport.centerOn(Object target, Number time)",
+      "param": [
+        "Object target - An entity with the 2D component",
+        "Number time - The duration in ms of the camera motion"
+      ],
+      "doc": "Centers the viewport on the given entity."
+    },
+    {
+      "name": "Crafty.viewport.zoom",
+      "comp": "Crafty.viewport",
+      "sign": "public void Crafty.viewport.zoom(Number amt, Number cent_x, Number cent_y, Number time)",
+      "param": [
+        "Number amt - amount to zoom in on the target by (eg. 2, 4, 0.5)",
+        "Number cent_x - the center to zoom on",
+        "Number cent_y - the center to zoom on",
+        "Number time - the duration in ms of the entire zoom operation"
+      ],
+      "doc": [
+        "Zooms the camera in on a given point. amt > 1 will bring the camera closer to the subject",
+        "amt < 1 will bring it farther away. amt = 0 will reset to the default zoom level",
+        "Zooming is multiplicative. To reset the zoom amount, pass 0."
+      ]
+    },
+    {
+      "name": "Crafty.viewport.scale",
+      "comp": "Crafty.viewport",
+      "sign": "public void Crafty.viewport.scale(Number amt)",
+      "param": "Number amt - amount to zoom/scale in on the elements",
+      "doc": [
+        "Adjusts the scale (zoom). When `amt` is 1, it is set to the normal scale,",
+        "e.g. an entity with `this.w == 20` would appear exactly 20 pixels wide.",
+        "When `amt` is 10, that same entity would appear 200 pixels wide (i.e., zoomed in",
+        "by a factor of 10), and when `amt` is 0.1, that same entity would be 2 pixels wide",
+        "(i.e., zoomed out by a factor of `(1 / 0.1)`).",
+        "If you pass an `amt` of 0, it is treated the same as passing 1, i.e. the scale is reset.",
+        "This method sets the absolute scale, while `Crafty.viewport.zoom` sets the scale relative to the existing value."
+      ],
+      "see": "Crafty.viewport.zoom",
+      "example": [
+        "",
+        "~~~",
+        "Crafty.viewport.scale(2); // Zoom in -- all entities will appear twice as large.",
+        "~~~"
+      ]
+    },
+    {
+      "name": "Crafty.viewport.mouselook",
+      "comp": "Crafty.viewport",
+      "sign": "public void Crafty.viewport.mouselook(Boolean active)",
+      "param": "Boolean active - Activate or deactivate mouselook",
+      "doc": [
+        "Toggle mouselook on the current viewport.",
+        "Simply call this function and the user will be able to",
+        "drag the viewport around.",
+        "If the user starts a drag, \"StopCamera\" will be triggered, which will cancel any existing camera animations."
+      ]
+    },
+    {
+      "name": "Crafty.viewport.init",
+      "comp": "Crafty.viewport",
+      "sign": [
+        "public void Crafty.viewport.init([Number width, Number height, String stage_elem])",
+        "public void Crafty.viewport.init([Number width, Number height, HTMLElement stage_elem])"
+      ],
+      "param": [
+        "Number width - Width of the viewport",
+        "Number height - Height of the viewport",
+        "String or HTMLElement stage_elem - the element to use as the stage (either its id or the actual element)."
+      ],
+      "doc": [
+        "Initialize the viewport. If the arguments 'width' or 'height' are missing, use Crafty.DOM.window.width and Crafty.DOM.window.height (full screen model).",
+        "The argument 'stage_elem' is used to specify a stage element other than the default, and can be either a string or an HTMLElement.  If a string is provided, it will look for an element with that id and, if none exists, create a div.  If an HTMLElement is provided, that is used directly.  Omitting this argument is the same as passing an id of 'cr-stage'."
+      ],
+      "see": "Crafty.device, Crafty.DOM, Crafty.stage"
+    },
+    {
+      "name": "Crafty.stage",
+      "category": "Core",
+      "doc": "The stage where all the DOM entities will be placed."
+    },
+    {
+      "name": "Crafty.stage.elem",
+      "comp": "Crafty.stage",
+      "doc": "The `#cr-stage` div element."
+    },
+    {
+      "name": "Crafty.stage.inner",
+      "comp": "Crafty.stage",
+      "doc": [
+        "`Crafty.stage.inner` is a div inside the `#cr-stage` div that holds all DOM entities.",
+        "If you use canvas, a `canvas` element is created at the same level in the dom",
+        "as the the `Crafty.stage.inner` div. So the hierarchy in the DOM is",
+        "~~~",
+        "Crafty.stage.elem",
+        " - Crafty.stage.inner (a div HTMLElement)",
+        " - Crafty.canvas._canvas (a canvas HTMLElement)",
+        "~~~"
+      ]
+    },
+    {
+      "name": "Crafty.viewport.reload",
+      "comp": "Crafty.stage",
+      "sign": "public Crafty.viewport.reload()",
+      "doc": [
+        "Recalculate and reload stage width, height and position.",
+        "Useful when browser return wrong results on init (like safari on Ipad2)."
+      ]
+    },
+    {
+      "name": "Crafty.viewport.reset",
+      "comp": "Crafty.stage",
+      "trigger": "StopCamera - called to cancel camera animations",
+      "sign": "public Crafty.viewport.reset()",
+      "doc": [
+        "Resets the viewport to starting values, and cancels any existing camera animations.",
+        "Called when scene() is run."
+      ]
+    }
+  ],
+  "device.js": [
+    {
+      "name": "Crafty.device",
+      "category": "Misc"
+    },
+    {
+      "name": "Crafty.device.deviceOrientation",
+      "comp": "Crafty.device",
+      "sign": "public Crafty.device.deviceOrientation(Function callback)",
+      "param": "callback - Callback method executed once as soon as device orientation is change",
+      "doc": [
+        "Do something with normalized device orientation data:",
+        "~~~",
+        "{",
+        "  'tiltLR'    :   'gamma the angle in degrees the device is tilted left-to-right.',",
+        "  'tiltFB'    :   'beta the angle in degrees the device is tilted front-to-back',",
+        "  'dir'       :   'alpha the direction the device is facing according to the compass',",
+        "  'motUD'     :   'The angles values increase as you tilt the device to the right or towards you.'",
+        "}",
+        "~~~"
+      ],
+      "example": [
+        "",
+        "~~~",
+        "// Get DeviceOrientation event normalized data.",
+        "Crafty.device.deviceOrientation(function(data){",
+        "    console.log('data.tiltLR : '+Math.round(data.tiltLR)+', data.tiltFB : '+Math.round(data.tiltFB)+', data.dir : '+Math.round(data.dir)+', data.motUD : '+data.motUD+'');",
+        "});",
+        "~~~",
+        "See browser support at http://caniuse.com/#search=device orientation."
+      ]
+    },
+    {
+      "name": "Crafty.device.deviceMotion",
+      "comp": "Crafty.device",
+      "sign": "public Crafty.device.deviceMotion(Function callback)",
+      "param": "callback - Callback method executed once as soon as device motion is change",
+      "doc": [
+        "Do something with normalized device motion data:",
+        "~~~",
+        "{",
+        "    'acceleration' : ' Grab the acceleration including gravity from the results',",
+        "    'rawAcceleration' : 'Display the raw acceleration data',",
+        "    'facingUp' : 'Z is the acceleration in the Z axis, and if the device is facing up or down',",
+        "    'tiltLR' : 'Convert the value from acceleration to degrees. acceleration.x is the acceleration according to gravity, we'll assume we're on Earth and divide by 9.81 (earth gravity) to get a percentage value, and then multiply that by 90 to convert to degrees.',",
+        "    'tiltFB' : 'Convert the value from acceleration to degrees.'",
+        "}",
+        "~~~"
+      ],
+      "example": [
+        "",
+        "~~~",
+        "// Get DeviceMotion event normalized data.",
+        "Crafty.device.deviceMotion(function(data){",
+        "    console.log('data.moAccel : '+data.rawAcceleration+', data.moCalcTiltLR : '+Math.round(data.tiltLR)+', data.moCalcTiltFB : '+Math.round(data.tiltFB)+'');",
+        "});",
+        "~~~",
+        "See browser support at http://caniuse.com/#search=motion."
+      ]
+    }
+  ],
+  "sprite.js": [
+    {
+      "name": "Crafty.sprite",
+      "category": "Graphics",
+      "sign": "public this Crafty.sprite([Number tile, [Number tileh]], String url, Object map[, Number paddingX[, Number paddingY[, Boolean paddingAroundBorder]]])",
+      "param": [
+        "tile - Tile size of the sprite map, defaults to 1",
+        "tileh - Height of the tile; if provided, tile is interpreted as the width",
+        "url - URL of the sprite image",
+        "map - Object where the key is what becomes a new component and the value points to a position on the sprite map",
+        "paddingX - Horizontal space in between tiles. Defaults to 0.",
+        "paddingY - Vertical space in between tiles. Defaults to paddingX.",
+        "paddingAroundBorder - If padding should be applied around the border of the sprite sheet. If enabled the first tile starts at (paddingX,paddingY) instead of (0,0). Defaults to false."
+      ],
+      "doc": [
+        "Generates components based on positions in a sprite image to be applied to entities.",
+        "Accepts a tile size, URL and map for the name of the sprite and its position.",
+        "The position must be an array containing the position of the sprite where index `0`",
+        "is the `x` position, `1` is the `y` position and optionally `2` is the width and `3`",
+        "is the height. If the sprite map has padding, pass the values for the `x` padding",
+        "or `y` padding. If they are the same, just add one value.",
+        "If the sprite image has no consistent tile size, `1` or no argument need be",
+        "passed for tile size.",
+        "Entities that add the generated components are also given the `2D` component, and",
+        "a component called `Sprite`."
+      ],
+      "example": [
+        "",
+        "~~~",
+        "Crafty.sprite(\"imgs/spritemap6.png\", {flower:[0,0,20,30]});",
+        "var flower_entity = Crafty.e(\"2D, DOM, flower\");",
+        "~~~",
+        "The first line creates a component called `flower` associated with the sub-image of",
+        "spritemap6.png with top-left corner (0,0), width 20 pixels, and height 30 pixels.",
+        "The second line creates an entity with that image. (Note: The `2D` is not really",
+        "necessary here, because adding the `flower` component automatically also adds the",
+        "`2D` component.)",
+        "~~~",
+        "Crafty.sprite(50, \"imgs/spritemap6.png\", {flower:[0,0], grass:[0,1,3,1]});",
+        "~~~",
+        "In this case, the `flower` component is pixels 0 <= x < 50, 0 <= y < 50, and the",
+        "`grass` component is pixels 0 <= x < 150, 50 <= y < 100. (The `3` means grass has a",
+        "width of 3 tiles, i.e. 150 pixels.)",
+        "~~~",
+        "Crafty.sprite(50, 100, \"imgs/spritemap6.png\", {flower:[0,0], grass:[0,1]}, 10);",
+        "~~~",
+        "In this case, each tile is 50x100, and there is a spacing of 10 pixels between",
+        "consecutive tiles. So `flower` is pixels 0 <= x < 50, 0 <= y < 100, and `grass` is",
+        "pixels 0 <= x < 50, 110 <= y < 210."
+      ],
+      "see": "Sprite"
+    },
+    {
+      "name": "Sprite",
+      "category": "Graphics",
+      "trigger": "Invalidate - when the sprites change",
+      "doc": "Component for using tiles in a sprite map."
+    },
+    {
+      "name": ".sprite",
+      "comp": "Sprite",
+      "sign": "public this .sprite(Number x, Number y[, Number w, Number h])",
+      "param": [
+        "x - X cell position",
+        "y - Y cell position",
+        "w - Width in cells. Optional.",
+        "h - Height in cells. Optional."
+      ],
+      "doc": [
+        "Uses a new location on the sprite map as its sprite. If w or h are ommitted, the width and height are not changed.",
+        "Values should be in tiles or cells (not pixels)."
+      ],
+      "example": [
+        "",
+        "~~~",
+        "Crafty.e(\"2D, DOM, Sprite\")",
+        "  .sprite(0, 0, 2, 2);",
+        "~~~"
+      ]
+    },
+    {
+      "name": ".__coord",
+      "comp": "Sprite",
+      "doc": "The coordinate of the slide within the sprite in the format of [x, y, w, h]."
+    },
+    {
+      "name": ".crop",
+      "comp": "Sprite",
+      "sign": "public this .crop(Number x, Number y, Number w, Number h)",
+      "param": [
+        "x - Offset x position",
+        "y - Offset y position",
+        "w - New width",
+        "h - New height"
+      ],
+      "doc": [
+        "If the entity needs to be smaller than the tile size, use this method to crop it.",
+        "The values should be in pixels rather than tiles."
+      ],
+      "example": [
+        "",
+        "~~~",
+        "Crafty.e(\"2D, DOM, Sprite\")",
+        "  .crop(40, 40, 22, 23);",
+        "~~~"
+      ]
+    }
+  ],
+  "canvas.js": [
+    {
+      "name": "Canvas",
+      "category": "Graphics",
+      "trigger": [
+        "Draw - when the entity is ready to be drawn to the stage - {type: \"canvas\", pos, co, ctx}",
+        "NoCanvas - if the browser does not support canvas"
+      ],
+      "doc": [
+        "When this component is added to an entity it will be drawn to the global canvas element. The canvas element (and hence all Canvas entities) is always rendered below any DOM entities.",
+        "Crafty.canvas.init() will be automatically called if it is not called already to initialize the canvas element.",
+        "Create a canvas entity like this",
+        "~~~",
+        "var myEntity = Crafty.e(\"2D, Canvas, Color\")",
+        "     .color(\"green\")",
+        "     .attr({x: 13, y: 37, w: 42, h: 42});",
+        "~~~"
+      ]
+    },
+    {
+      "name": ".draw",
+      "comp": "Canvas",
+      "sign": "public this .draw([[Context ctx, ]Number x, Number y, Number w, Number h])",
+      "param": [
+        "ctx - Canvas 2D context if drawing on another canvas is required",
+        "x - X offset for drawing a segment",
+        "y - Y offset for drawing a segment",
+        "w - Width of the segment to draw",
+        "h - Height of the segment to draw"
+      ],
+      "doc": "Method to draw the entity on the canvas element. Can pass rect values for redrawing a segment of the entity."
+    },
+    {
+      "name": "Crafty.canvas",
+      "category": "Graphics",
+      "doc": "Collection of methods to draw on canvas."
+    },
+    {
+      "name": "Crafty.canvas.context",
+      "comp": "Crafty.canvas",
+      "doc": [
+        "This will return the 2D context of the main canvas element.",
+        "The value returned from `Crafty.canvas._canvas.getContext('2d')`."
+      ]
+    },
+    {
+      "name": "Crafty.canvas._canvas",
+      "comp": "Crafty.canvas",
+      "doc": "Main Canvas element"
+    },
+    {
+      "name": "Crafty.canvas.init",
+      "comp": "Crafty.canvas",
+      "sign": "public void Crafty.canvas.init(void)",
+      "trigger": "NoCanvas - triggered if `Crafty.support.canvas` is false",
+      "doc": [
+        "Creates a `canvas` element inside `Crafty.stage.elem`. Must be called",
+        "before any entities with the Canvas component can be drawn.",
+        "This method will automatically be called if no `Crafty.canvas.context` is",
+        "found."
+      ]
+    }
+  ],
+  "controls.js": [
+    {
+      "name": "Crafty.keydown",
+      "category": "Input",
+      "doc": "Remembering what keys (referred by Unicode) are down.",
+      "example": [
+        "",
+        "~~~",
+        "Crafty.c(\"Keyboard\", {",
+        "  isDown: function (key) {",
+        "    if (typeof key === \"string\") {",
+        "      key = Crafty.keys[key];",
+        "    }",
+        "    return !!Crafty.keydown[key];",
+        "  }",
+        "});",
+        "~~~"
+      ],
+      "see": "Keyboard, Crafty.keys"
+    },
+    {
+      "name": "Crafty.mouseDispatch",
+      "category": "Input",
+      "doc": [
+        "Internal method which dispatches mouse events received by Crafty (crafty.stage.elem).",
+        "The mouse events get dispatched to the closest entity to the source of the event (if available).",
+        "This method also sets a global property Crafty.lastEvent, which holds the most recent event that",
+        "occured (useful for determining mouse position in every frame).",
+        "~~~",
+        "var newestX = Crafty.lastEvent.realX,",
+        "    newestY = Crafty.lastEvent.realY;",
+        "~~~",
+        "Notable properties of a MouseEvent e:",
+        "~~~",
+        "//(x,y) coordinates of mouse event in web browser screen space",
+        "e.clientX, e.clientY",
+        "//(x,y) coordinates of mouse event in world/viewport space",
+        "e.realX, e.realY",
+        "// Normalized mouse button according to Crafty.mouseButtons",
+        "e.mouseButton",
+        "~~~"
+      ],
+      "see": "Crafty.touchDispatch"
+    },
+    {
+      "name": "Crafty.touchDispatch",
+      "category": "Input",
+      "doc": [
+        "TouchEvents have a different structure then MouseEvents.",
+        "The relevant data lives in e.changedTouches[0].",
+        "To normalize TouchEvents we catch them and dispatch a mock MouseEvent instead."
+      ],
+      "see": "Crafty.mouseDispatch"
+    },
+    {
+      "name": "KeyboardEvent",
+      "category": "Input",
+      "doc": "Keyboard Event triggered by Crafty Core",
+      "trigger": [
+        "KeyDown - is triggered for each entity when the DOM 'keydown' event is triggered.",
+        "KeyUp - is triggered for each entity when the DOM 'keyup' event is triggered."
+      ],
+      "example": [
+        "",
+        "~~~",
+        "Crafty.e(\"2D, DOM, Color\")",
+        "  .attr({x: 100, y: 100, w: 50, h: 50})",
+        "  .color(\"red\")",
+        "  .bind('KeyDown', function(e) {",
+        "    if(e.key == Crafty.keys.LEFT_ARROW) {",
+        "      this.x = this.x-1;",
+        "    } else if (e.key == Crafty.keys.RIGHT_ARROW) {",
+        "      this.x = this.x+1;",
+        "    } else if (e.key == Crafty.keys.UP_ARROW) {",
+        "      this.y = this.y-1;",
+        "    } else if (e.key == Crafty.keys.DOWN_ARROW) {",
+        "      this.y = this.y+1;",
+        "    }",
+        "  });",
+        "~~~"
+      ],
+      "see": "Crafty.keys"
+    },
+    {
+      "name": "Crafty.eventObject",
+      "category": "Input",
+      "doc": "Event Object used in Crafty for cross browser compatibility"
+    },
+    {
+      "name": ".key",
+      "comp": "Crafty.eventObject",
+      "doc": "Unicode of the key pressed"
+    },
+    {
+      "name": "Mouse",
+      "category": "Input",
+      "doc": [
+        "Provides the entity with mouse related events",
+        "Crafty adds the mouseButton property to MouseEvents that match one of",
+        "- Crafty.mouseButtons.LEFT",
+        "- Crafty.mouseButtons.RIGHT",
+        "- Crafty.mouseButtons.MIDDLE"
+      ],
+      "trigger": [
+        "MouseOver - when the mouse enters the entity - MouseEvent",
+        "MouseOut - when the mouse leaves the entity - MouseEvent",
+        "MouseDown - when the mouse button is pressed on the entity - MouseEvent",
+        "MouseUp - when the mouse button is released on the entity - MouseEvent",
+        "Click - when the user clicks the entity. [See documentation](http://www.quirksmode.org/dom/events/click.html) - MouseEvent",
+        "DoubleClick - when the user double clicks the entity - MouseEvent",
+        "MouseMove - when the mouse is over the entity and moves - MouseEvent"
+      ],
+      "example": [
+        "",
+        "~~~",
+        "myEntity.bind('Click', function() {",
+        "     console.log(\"Clicked!!\");",
+        "})",
+        "myEntity.bind('MouseUp', function(e) {",
+        "   if( e.mouseButton == Crafty.mouseButtons.RIGHT )",
+        "       console.log(\"Clicked right button\");",
+        "})",
+        "~~~"
+      ],
+      "see": "Crafty.mouseDispatch"
+    },
+    {
+      "name": ".areaMap",
+      "comp": "Mouse",
+      "sign": [
+        "public this .areaMap(Crafty.polygon polygon)",
+        "public this .areaMap(Array point1, .., Array pointN)"
+      ],
+      "param": [
+        "polygon - Instance of Crafty.polygon used to check if the mouse coordinates are inside this region",
+        "point# - Array with an `x` and `y` position to generate a polygon"
+      ],
+      "doc": [
+        "Assign a polygon to the entity so that mouse events will only be triggered if",
+        "the coordinates are inside the given polygon."
+      ],
+      "example": [
+        "",
+        "~~~",
+        "Crafty.e(\"2D, DOM, Color, Mouse\")",
+        "    .color(\"red\")",
+        "    .attr({ w: 100, h: 100 })",
+        "    .bind('MouseOver', function() {console.log(\"over\")})",
+        "    .areaMap([0,0], [50,0], [50,50], [0,50])",
+        "~~~"
+      ],
+      "see": "Crafty.polygon"
+    },
+    {
+      "name": "Draggable",
+      "category": "Input",
+      "doc": "Enable drag and drop of the entity.",
+      "trigger": [
+        "Dragging - is triggered each frame the entity is being dragged - MouseEvent",
+        "StartDrag - is triggered when dragging begins - MouseEvent",
+        "StopDrag - is triggered when dragging ends - MouseEvent"
+      ]
+    },
+    {
+      "name": ".dragDirection",
+      "comp": "Draggable",
+      "sign": [
+        "public this .dragDirection()",
+        "public this .dragDirection(vector)",
+        "public this .dragDirection(degree)"
+      ],
+      "doc": [
+        "Remove any previously specified direction.",
+        "Specify the dragging direction."
+      ],
+      "param": [
+        "vector - Of the form of {x: valx, y: valy}, the vector (valx, valy) denotes the move direction.",
+        "degree - A number, the degree (clockwise) of the move direction with respect to the x axis."
+      ],
+      "example": [
+        "",
+        "~~~",
+        "this.dragDirection()",
+        "this.dragDirection({x:1, y:0}) //Horizontal",
+        "this.dragDirection({x:0, y:1}) //Vertical",
+        "// Note: because of the orientation of x and y axis,",
+        "// this is 45 degree clockwise with respect to the x axis.",
+        "this.dragDirection({x:1, y:1}) //45 degree.",
+        "this.dragDirection(60) //60 degree.",
+        "~~~"
+      ]
+    },
+    {
+      "name": "._startDrag",
+      "comp": "Draggable",
+      "doc": "Internal method for starting a drag of an entity either programatically or via Mouse click",
+      "param": "e - a mouse event"
+    },
+    {
+      "name": ".stopDrag",
+      "comp": "Draggable",
+      "sign": "public this .stopDrag(void)",
+      "trigger": "StopDrag - Called right after the mouse listeners are removed",
+      "doc": "Stop the entity from dragging. Essentially reproducing the drop.",
+      "see": ".startDrag"
+    },
+    {
+      "name": ".startDrag",
+      "comp": "Draggable",
+      "sign": "public this .startDrag(void)",
+      "doc": "Make the entity follow the mouse positions.",
+      "see": ".stopDrag"
+    },
+    {
+      "name": ".enableDrag",
+      "comp": "Draggable",
+      "sign": "public this .enableDrag(void)",
+      "doc": "Rebind the mouse events. Use if `.disableDrag` has been called.",
+      "see": ".disableDrag"
+    },
+    {
+      "name": ".disableDrag",
+      "comp": "Draggable",
+      "sign": "public this .disableDrag(void)",
+      "doc": "Stops entity from being draggable. Reenable with `.enableDrag()`.",
+      "see": ".enableDrag"
+    },
+    {
+      "name": "Keyboard",
+      "category": "Input",
+      "doc": "Give entities keyboard events (`keydown` and `keyup`)."
+    },
+    {
+      "name": ".isDown",
+      "comp": "Keyboard",
+      "sign": [
+        "public Boolean isDown(String keyName)",
+        "public Boolean isDown(Number keyCode)"
+      ],
+      "param": [
+        "keyName - Name of the key to check. See `Crafty.keys`.",
+        "keyCode - Key code in `Crafty.keys`."
+      ],
+      "doc": "Determine if a certain key is currently down.",
+      "example": [
+        "",
+        "~~~",
+        "entity.requires('Keyboard').bind('KeyDown', function () { if (this.isDown('SPACE')) jump(); });",
+        "~~~"
+      ],
+      "see": "Crafty.keys"
+    },
+    {
+      "name": "Multiway",
+      "category": "Input",
+      "doc": "Used to bind keys to directions and have the entity move accordingly",
+      "trigger": [
+        "NewDirection - triggered when direction changes - { x:Number, y:Number } - New direction",
+        "Moved - triggered on movement on either x or y axis. If the entity has moved on both axes for diagonal movement the event is triggered twice - { x:Number, y:Number } - Old position"
+      ]
+    },
+    {
+      "name": ".multiway",
+      "comp": "Multiway",
+      "sign": "public this .multiway([Number speed,] Object keyBindings )",
+      "param": [
+        "speed - Amount of pixels to move the entity whilst a key is down",
+        "keyBindings - What keys should make the entity go in which direction. Direction is specified in degrees"
+      ],
+      "doc": [
+        "Constructor to initialize the speed and keyBindings. Component will listen to key events and move the entity appropriately.",
+        "When direction changes a NewDirection event is triggered with an object detailing the new direction: {x: x_movement, y: y_movement}",
+        "When entity has moved on either x- or y-axis a Moved event is triggered with an object specifying the old position {x: old_x, y: old_y}"
+      ],
+      "example": [
+        "",
+        "~~~",
+        "this.multiway(3, {UP_ARROW: -90, DOWN_ARROW: 90, RIGHT_ARROW: 0, LEFT_ARROW: 180});",
+        "this.multiway({x:3,y:1.5}, {UP_ARROW: -90, DOWN_ARROW: 90, RIGHT_ARROW: 0, LEFT_ARROW: 180});",
+        "this.multiway({W: -90, S: 90, D: 0, A: 180});",
+        "~~~"
+      ]
+    },
+    {
+      "name": ".enableControl",
+      "comp": "Multiway",
+      "sign": "public this .enableControl()",
+      "doc": "Enable the component to listen to key events.",
+      "example": [
+        "",
+        "~~~",
+        "this.enableControl();",
+        "~~~"
+      ]
+    },
+    {
+      "name": ".disableControl",
+      "comp": "Multiway",
+      "sign": "public this .disableControl()",
+      "doc": "Disable the component to listen to key events.",
+      "example": [
+        "",
+        "~~~",
+        "this.disableControl();",
+        "~~~"
+      ]
+    },
+    {
+      "name": ".speed",
+      "comp": "Multiway",
+      "sign": "public this .speed(Number speed)",
+      "param": "speed - The speed the entity has.",
+      "doc": "Change the speed that the entity moves with.",
+      "example": [
+        "",
+        "~~~",
+        "this.speed(2);",
+        "~~~"
+      ]
+    },
+    {
+      "name": "Fourway",
+      "category": "Input",
+      "doc": [
+        "Move an entity in four directions by using the",
+        "arrow keys or `W`, `A`, `S`, `D`."
+      ]
+    },
+    {
+      "name": ".fourway",
+      "comp": "Fourway",
+      "sign": "public this .fourway(Number speed)",
+      "param": "speed - Amount of pixels to move the entity whilst a key is down",
+      "doc": [
+        "Constructor to initialize the speed. Component will listen for key events and move the entity appropriately.",
+        "This includes `Up Arrow`, `Right Arrow`, `Down Arrow`, `Left Arrow` as well as `W`, `A`, `S`, `D`.",
+        "When direction changes a NewDirection event is triggered with an object detailing the new direction: {x: x_movement, y: y_movement}",
+        "When entity has moved on either x- or y-axis a Moved event is triggered with an object specifying the old position {x: old_x, y: old_y}",
+        "The key presses will move the entity in that direction by the speed passed in the argument."
+      ],
+      "see": "Multiway"
+    },
+    {
+      "name": "Twoway",
+      "category": "Input",
+      "trigger": [
+        "NewDirection - When direction changes a NewDirection event is triggered with an object detailing the new direction: {x: x_movement, y: y_movement}. This is consistent with Fourway and Multiway components.",
+        "Moved - When entity has moved on x-axis a Moved event is triggered with an object specifying the old position {x: old_x, y: old_y}"
+      ],
+      "doc": "Move an entity left or right using the arrow keys or `D` and `A` and jump using up arrow or `W`."
+    },
+    {
+      "name": ".twoway",
+      "comp": "Twoway",
+      "sign": "public this .twoway(Number speed[, Number jump])",
+      "param": [
+        "speed - Amount of pixels to move left or right",
+        "jump - Vertical jump speed"
+      ],
+      "doc": [
+        "Constructor to initialize the speed and power of jump. Component will",
+        "listen for key events and move the entity appropriately. This includes",
+        "`Up Arrow`, `Right Arrow`, `Left Arrow` as well as `W`, `A`, `D`. Used with the",
+        "`gravity` component to simulate jumping.",
+        "The key presses will move the entity in that direction by the speed passed in",
+        "the argument. Pressing the `Up Arrow` or `W` will cause the entity to jump."
+      ],
+      "see": "Gravity, Fourway"
+    }
+  ],
+  "animation.js": [
+    {
+      "name": "Tween",
+      "category": "Animation",
+      "trigger": "TweenEnd - when a tween finishes - String - property",
+      "doc": "Component to animate the change in 2D properties over time."
+    },
+    {
+      "name": ".tween",
+      "comp": "Tween",
+      "sign": "public this .tween(Object properties, Number|String duration)",
+      "param": [
+        "properties - Object of numeric properties and what they should animate to",
+        "duration - Duration to animate the properties over, in milliseconds."
+      ],
+      "doc": [
+        "This method will animate numeric properties over the specified duration.",
+        "These include `x`, `y`, `w`, `h`, `alpha` and `rotation`.",
+        "The object passed should have the properties as keys and the value should be the resulting",
+        "values of the properties.  The passed object might be modified if later calls to tween animate the same properties."
+      ],
+      "example": [
+        "",
+        "Move an object to 100,100 and fade out over 200 ms.",
+        "~~~",
+        "Crafty.e(\"2D, Tween\")",
+        "   .attr({alpha: 1.0, x: 0, y: 0})",
+        "   .tween({alpha: 0.0, x: 100, y: 100}, 200)",
+        "~~~",
+        null,
+        "Rotate an object over 2 seconds",
+        "~~~",
+        "Crafty.e(\"2D, Tween\")",
+        "   .attr({rotate:0})",
+        "   .tween({rotate:180}, 2000)",
+        "~~~"
+      ]
+    },
+    {
+      "name": ".cancelTween",
+      "comp": "Tween",
+      "sign": [
+        "public this .cancelTween(String target)",
+        "public this .cancelTween(Object target)"
+      ],
+      "param": [
+        "target - The property to cancel",
+        "target - An object containing the properties to cancel."
+      ],
+      "doc": [
+        "Stops tweening the specified property or properties.",
+        "Passing the object used to start the tween might be a typical use of the second signature."
+      ]
+    }
+  ],
+  "sprite-animation.js": [
+    {
+      "name": "SpriteAnimation",
+      "category": "Animation",
+      "trigger": [
+        "StartAnimation - When an animation starts playing, or is resumed from the paused state - {Reel}",
+        "AnimationEnd - When the animation finishes - { Reel }",
+        "FrameChange - Each time the frame of the current reel changes - { Reel }",
+        "ReelChange - When the reel changes - { Reel }"
+      ],
+      "doc": [
+        "Used to animate sprites by treating a sprite map as a set of animation frames.",
+        "Must be applied to an entity that has a sprite-map component.",
+        "To define an animation, see the `reel` method.  To play an animation, see the `animate` method.",
+        "A reel is an object that contains the animation frames and current state for an animation.  The reel object has the following properties:",
+        "Many animation related events pass a reel object as data.  As typical with events, this should be treated as read only data that might be later altered by the entity.  If you wish to preserve the data, make a copy of it."
+      ],
+      "param": [
+        "id: (String) - the name of the reel",
+        "frames: (Array) - A list of frames in the format [xpos, ypos]",
+        "currentFrame: (Number) - The index of the current frame",
+        "easing: (Crafty.easing object) - The object that handles the internal progress of the animation.",
+        "duration: (Number) - The duration in milliseconds."
+      ],
+      "see": "crafty.sprite"
+    },
+    {
+      "name": ".animationSpeed",
+      "comp": "SpriteAnimation",
+      "doc": "The playback rate of the animation.  This property defaults to 1."
+    },
+    {
+      "name": ".reel",
+      "comp": "SpriteAnimation",
+      "doc": [
+        "Used to define reels, to change the active reel, and to fetch the id of the active reel.",
+        "Defines a reel by starting and ending position on the sprite sheet.",
+        "Defines a reel by an explicit list of frames",
+        "Switches to the specified reel.  The sprite will be updated to that reel's current frame",
+        "A method to handle animation reels.  Only works for sprites built with the Crafty.sprite methods.",
+        "See the Tween component for animation of 2D properties.",
+        "To setup an animation reel, pass the name of the reel (used to identify the reel later), and either an",
+        "array of absolute sprite positions or the start x on the sprite map, the y on the sprite map and then the end x on the sprite map."
+      ],
+      "sign": [
+        "public this .reel(String reelId, Duration duration, Number fromX, Number fromY, Number frameCount)",
+        "public this .reel(String reelId, Duration duration, Array frames)",
+        "public this .reel(String reelId)",
+        "public Reel .reel()"
+      ],
+      "param": [
+        "reelId - ID of the animation reel being created",
+        "duration - The length of the animation in milliseconds.",
+        "fromX - Starting `x` position on the sprite map (x's unit is the horizontal size of the sprite in the sprite map).",
+        "fromY - `y` position on the sprite map (y's unit is the horizontal size of the sprite in the sprite map). Remains constant through the animation.",
+        "frameCount - The number of sequential frames in the animation.  If negative, the animation will play backwards.",
+        "reelId - ID of the animation reel being created",
+        "duration - The length of the animation in milliseconds.",
+        "frames - An array of arrays containing the `x` and `y` values of successive frames: [[x1,y1],[x2,y2],...] (the values are in the unit of the sprite map's width/height respectively).",
+        "reelID - the ID to switch to"
+      ],
+      "return": "The id of the current reel",
+      "example": [
+        "",
+        "~~~",
+        "// Define a sprite-map component",
+        "Crafty.sprite(16, \"images/sprite.png\", {",
+        "    PlayerSprite: [0,0]",
+        "});",
+        "// Define an animation on the second row of the sprite map (fromY = 1)",
+        "// from the left most sprite (fromX = 0) to the fourth sprite",
+        "// on that row (frameCount = 4), with a duration of 1 second",
+        "Crafty.e(\"2D, DOM, SpriteAnimation, PlayerSprite\").reel('PlayerRunning', 1000, 0, 1, 4);",
+        "// This is the same animation definition, but using the alternative method",
+        "Crafty.e(\"2D, DOM, SpriteAnimation, PlayerSprite\").reel('PlayerRunning', 1000, [[0, 1], [1, 1], [2, 1], [3, 1]]);",
+        "~~~"
+      ]
+    },
+    {
+      "name": ".animate",
+      "comp": "SpriteAnimation",
+      "sign": "public this .animate([String reelId] [, Number loopCount])",
+      "param": [
+        "reelId - ID of the animation reel to play.  Defaults to the current reel if none is specified.",
+        "loopCount - Number of times to repeat the animation. Use -1 to repeat indefinitely.  Defaults to 1."
+      ],
+      "doc": [
+        "Play one of the reels previously defined through `.reel(...)`. Simply pass the name of the reel. If you wish the",
+        "animation to play multiple times in succession, pass in the amount of times as an additional parameter.",
+        "To have the animation repeat indefinitely, pass in `-1`.",
+        "If another animation is currently playing, it will be paused.",
+        "This will always play an animation from the beginning.  If you wish to resume from the current state of a reel, use `resumeAnimation()`.",
+        "Once an animation ends, it will remain at its last frame."
+      ],
+      "example": [
+        "",
+        "~~~",
+        "// Define a sprite-map component",
+        "Crafty.sprite(16, \"images/sprite.png\", {",
+        "    PlayerSprite: [0,0]",
+        "});",
+        "// Play the animation across 20 frames (so each sprite in the 4 sprite animation should be seen for 5 frames) and repeat indefinitely",
+        "Crafty.e(\"2D, DOM, SpriteAnimation, PlayerSprite\")",
+        "    .reel('PlayerRunning', 20, 0, 0, 3) // setup animation",
+        "    .animate('PlayerRunning', -1); // start animation",
+        "~~~"
+      ]
+    },
+    {
+      "name": ".resumeAnimation",
+      "comp": "SpriteAnimation",
+      "sign": "public this .resumeAnimation()",
+      "doc": [
+        "This will resume animation of the current reel from its current state.",
+        "If a reel is already playing, or there is no current reel, there will be no effect."
+      ]
+    },
+    {
+      "name": ".pauseAnimation",
+      "comp": "SpriteAnimation",
+      "sign": "public this .pauseAnimation(void)",
+      "doc": "Pauses the currently playing animation, or does nothing if no animation is playing."
+    },
+    {
+      "name": ".resetAnimation",
+      "comp": "SpriteAnimation",
+      "sign": "public this .resetAnimation()",
+      "doc": [
+        "Resets the current animation to its initial state.  Resets the number of loops to the last specified value, which defaults to 1.",
+        "Neither pauses nor resumes the current animation."
+      ]
+    },
+    {
+      "name": ".loops",
+      "comp": "SpriteAnimation",
+      "sign": [
+        "public this .loops(Number loopCount)",
+        "public Number .loops()"
+      ],
+      "param": "loopCount - The number of times to play the animation",
+      "doc": [
+        "Sets the number of times the animation will loop for.",
+        "If called while an animation is in progress, the current state will be considered the first loop."
+      ]
+    },
+    {
+      "name": ".reelPosition",
+      "comp": "SpriteAnimation",
+      "sign": [
+        "public this .reelPosition(Integer position)",
+        "public this .reelPosition(Number position)",
+        "public this .reelPosition(String position)",
+        "public Number .reelPosition()"
+      ],
+      "doc": [
+        "Sets the position of the current reel by frame number.",
+        "Sets the position of the current reel by percent progress.",
+        "Jumps to the specified position.  The only currently accepted value is \"end\", which will jump to the end of the reel."
+      ],
+      "param": [
+        "position - the frame to jump to.  This is zero-indexed.  A negative values counts back from the last frame.",
+        "position - a non-integer number between 0 and 1"
+      ]
+    },
+    {
+      "name": ".isPlaying",
+      "comp": "SpriteAnimation",
+      "sign": "public Boolean .isPlaying([String reelId])",
+      "param": "reelId - The reelId of the reel we wish to examine",
+      "doc": [
+        "Determines if the specified animation is currently playing. If no reelId is specified,",
+        "checks if any animation is playing."
+      ],
+      "example": [
+        "",
+        "~~~",
+        "myEntity.isPlaying() // is any animation playing",
+        "myEntity.isPlaying('PlayerRunning') // is the PlayerRunning animation playing",
+        "~~~"
+      ]
+    },
+    {
+      "name": ".getReel",
+      "comp": "SpriteAnimation",
+      "sign": [
+        "public Reel .getReel()",
+        "public Reel .getReel(reelId)"
+      ],
+      "param": "reelId - The id of the reel to fetch."
+    }
+  ],
+  "drawing.js": [
+    {
+      "name": "Color",
+      "category": "Graphics",
+      "doc": "Draw a solid color for the entity"
+    },
+    {
+      "name": ".color",
+      "comp": "Color",
+      "trigger": "Invalidate - when the color changes",
+      "sign": [
+        "public this .color(String color)",
+        "public String .color()"
+      ],
+      "param": "color - Color of the rectangle",
+      "doc": [
+        "Will create a rectangle of solid color for the entity, or return the color if no argument is given.",
+        "The argument must be a color readable depending on which browser you",
+        "choose to support."
+      ],
+      "example": [
+        "",
+        "```",
+        "Crafty.e(\"2D, DOM, Color\")",
+        "   .color(\"#969696\");",
+        "```"
+      ]
+    },
+    {
+      "name": "Tint",
+      "category": "Graphics",
+      "doc": [
+        "Similar to Color by adding an overlay of semi-transparent color.",
+        "*Note: Currently only works for Canvas*"
+      ]
+    },
+    {
+      "name": ".tint",
+      "comp": "Tint",
+      "trigger": "Invalidate - when the tint is applied",
+      "sign": "public this .tint(String color, Number strength)",
+      "param": [
+        "color - The color in hexadecimal",
+        "strength - Level of opacity"
+      ],
+      "doc": "Modify the color and level opacity to give a tint on the entity.",
+      "example": [
+        "",
+        "~~~",
+        "Crafty.e(\"2D, Canvas, Tint\")",
+        "   .tint(\"#969696\", 0.3);",
+        "~~~"
+      ]
+    },
+    {
+      "name": "Image",
+      "category": "Graphics",
+      "doc": "Draw an image with or without repeating (tiling)."
+    },
+    {
+      "name": ".image",
+      "comp": "Image",
+      "trigger": "Invalidate - when the image is loaded",
+      "sign": "public this .image(String url[, String repeat])",
+      "param": [
+        "url - URL of the image",
+        "repeat - If the image should be repeated to fill the entity."
+      ],
+      "doc": [
+        "Draw specified image. Repeat follows CSS syntax (`\"no-repeat\", \"repeat\", \"repeat-x\", \"repeat-y\"`);",
+        "*Note: Default repeat is `no-repeat` which is different to standard DOM (which is `repeat`)*",
+        "If the width and height are `0` and repeat is set to `no-repeat` the width and",
+        "height will automatically assume that of the image. This is an",
+        "easy way to create an image without needing sprites."
+      ],
+      "example": [
+        "",
+        "Will default to no-repeat. Entity width and height will be set to the images width and height",
+        "~~~",
+        "var ent = Crafty.e(\"2D, DOM, Image\").image(\"myimage.png\");",
+        "~~~",
+        "Create a repeating background.",
+        "~~~",
+        "var bg = Crafty.e(\"2D, DOM, Image\")",
+        "             .attr({w: Crafty.viewport.width, h: Crafty.viewport.height})",
+        "             .image(\"bg.png\", \"repeat\");",
+        "~~~"
+      ],
+      "see": "Crafty.sprite"
+    },
+    {
+      "name": "Crafty.toRGB",
+      "category": "Graphics",
+      "sign": "public String Crafty.scene(String hex[, Number alpha])",
+      "param": [
+        "hex - a 6 character hex number string representing RGB color",
+        "alpha - The alpha value."
+      ],
+      "doc": "Get a rgb string or rgba string (if `alpha` presents).",
+      "example": [
+        "",
+        "~~~",
+        "Crafty.toRGB(\"ffffff\"); // rgb(255,255,255)",
+        "Crafty.toRGB(\"#ffffff\"); // rgb(255,255,255)",
+        "Crafty.toRGB(\"ffffff\", .5); // rgba(255,255,255,0.5)",
+        "~~~"
+      ],
+      "see": "Text.textColor"
+    },
+    {
+      "name": "Crafty.DrawManager",
+      "category": "Graphics",
+      "sign": "Crafty.DrawManager",
+      "doc": [
+        "An internal object manage objects to be drawn and implement",
+        "the best method of drawing in both DOM and canvas"
+      ]
+    },
+    {
+      "name": "Crafty.DrawManager.total2D",
+      "comp": "Crafty.DrawManager",
+      "doc": "Total number of the entities that have the `2D` component."
+    },
+    {
+      "name": "Crafty.DrawManager.onScreen",
+      "comp": "Crafty.DrawManager",
+      "sign": "public Crafty.DrawManager.onScreen(Object rect)",
+      "param": "rect - A rectangle with field {_x: x_val, _y: y_val, _w: w_val, _h: h_val}",
+      "doc": "Test if a rectangle is completely in viewport"
+    },
+    {
+      "name": "Crafty.DrawManager.mergeSet",
+      "comp": "Crafty.DrawManager",
+      "sign": "public Object Crafty.DrawManager.mergeSet(Object set)",
+      "param": "set - an array of rectangular regions",
+      "doc": [
+        "Merge any consecutive, overlapping rects into each other.",
+        "Its an optimization for the redraw regions.",
+        "The order of set isn't strictly meaningful,",
+        "but overlapping objects will often cause each other to change,",
+        "and so might be consecutive."
+      ]
+    },
+    {
+      "name": "Crafty.DrawManager.addCanvas",
+      "comp": "Crafty.DrawManager",
+      "sign": "public Crafty.DrawManager.addCanvas(ent)",
+      "param": "ent - The entity to add",
+      "doc": "Add an entity to the list of Canvas objects to draw"
+    },
+    {
+      "name": "Crafty.DrawManager.addDom",
+      "comp": "Crafty.DrawManager",
+      "sign": "public Crafty.DrawManager.addDom(ent)",
+      "param": "ent - The entity to add",
+      "doc": "Add an entity to the list of DOM object to draw"
+    },
+    {
+      "name": "Crafty.DrawManager.debug",
+      "comp": "Crafty.DrawManager",
+      "sign": "public Crafty.DrawManager.debug()"
+    },
+    {
+      "name": "Crafty.DrawManager.drawAll",
+      "comp": "Crafty.DrawManager",
+      "sign": "public Crafty.DrawManager.drawAll([Object rect])",
+      "param": "rect - a rectangular region {_x: x_val, _y: y_val, _w: w_val, _h: h_val}",
+      "doc": [
+        "- If rect is omitted, redraw within the viewport",
+        "- If rect is provided, redraw within the rect"
+      ]
+    },
+    {
+      "name": "Crafty.DrawManager.boundingRect",
+      "comp": "Crafty.DrawManager",
+      "sign": "public Crafty.DrawManager.boundingRect(set)",
+      "param": "set - Undocumented",
+      "doc": [
+        "- Calculate the common bounding rect of multiple canvas entities.",
+        "- Returns coords"
+      ]
+    },
+    {
+      "name": "Crafty.DrawManager.renderCanvas",
+      "comp": "Crafty.DrawManager",
+      "sign": "public Crafty.DrawManager.renderCanvas()",
+      "doc": [
+        "- Triggered by the \"RenderScene\" event",
+        "- If the number of rects is over 60% of the total number of objects",
+        "\tdo the naive method redrawing `Crafty.DrawManager.drawAll`",
+        "- Otherwise, clear the dirty regions, and redraw entities overlapping the dirty regions."
+      ],
+      "see": "Canvas.draw"
+    },
+    {
+      "name": "Crafty.DrawManager.renderDOM",
+      "comp": "Crafty.DrawManager",
+      "sign": "public Crafty.DrawManager.renderDOM()",
+      "doc": "When \"RenderScene\" is triggered, draws all DOM entities that have been flagged",
+      "see": "DOM.draw"
+    },
+    {
+      "name": "Crafty.pixelart",
+      "category": "Graphics",
+      "sign": "public void Crafty.pixelart(Boolean enabled)",
+      "doc": [
+        "Sets the image smoothing for drawing images (for both DOM and Canvas).",
+        "Setting this to true disables smoothing for images, which is the preferred",
+        "way for drawing pixel art. Defaults to false.",
+        "This feature is experimental and you should be careful with cross-browser compatibility.",
+        "The best way to disable image smoothing is to use the Canvas render method and the Sprite component for drawing your entities.",
+        "This method will have no effect for Canvas image smoothing if the canvas is not initialized yet.",
+        "Note that Firefox_26 currently has a [bug](https://bugzilla.mozilla.org/show_bug.cgi?id=696630)",
+        "which prevents disabling image smoothing for Canvas entities that use the Image component. Use the Sprite",
+        "component instead.",
+        "Note that Webkit (Chrome & Safari) currently has a bug [link1](http://code.google.com/p/chromium/issues/detail?id=134040)",
+        "[link2](http://code.google.com/p/chromium/issues/detail?id=106662) that prevents disabling image smoothing",
+        "for DOM entities."
+      ],
+      "example": [
+        "",
+        "This is the preferred way to draw pixel art with the best cross-browser compatibility.",
+        "~~~",
+        "Crafty.canvas.init();",
+        "Crafty.pixelart(true);",
+        "Crafty.sprite(imgWidth, imgHeight, \"spriteMap.png\", {sprite1:[0,0]});",
+        "Crafty.e(\"2D, Canvas, sprite1\");",
+        "~~~"
+      ]
+    }
+  ],
+  "isometric.js": [
+    {
+      "name": "Crafty.isometric",
+      "category": "2D",
+      "doc": "Place entities in a 45deg isometric fashion."
+    },
+    {
+      "name": "Crafty.isometric.size",
+      "comp": "Crafty.isometric",
+      "sign": "public this Crafty.isometric.size(Number tileSize)",
+      "param": "tileSize - The size of the tiles to place.",
+      "doc": [
+        "Method used to initialize the size of the isometric placement.",
+        "Recommended to use a size values in the power of `2` (128, 64 or 32).",
+        "This makes it easy to calculate positions and implement zooming."
+      ],
+      "example": [
+        "",
+        "~~~",
+        "var iso = Crafty.isometric.size(128);",
+        "~~~"
+      ],
+      "see": "Crafty.isometric.place"
+    },
+    {
+      "name": "Crafty.isometric.place",
+      "comp": "Crafty.isometric",
+      "sign": "public this Crafty.isometric.place(Number x, Number y, Number z, Entity tile)",
+      "param": [
+        "x - The `x` position to place the tile",
+        "y - The `y` position to place the tile",
+        "z - The `z` position or height to place the tile",
+        "tile - The entity that should be position in the isometric fashion"
+      ],
+      "doc": "Use this method to place an entity in an isometric grid.",
+      "example": [
+        "",
+        "~~~",
+        "var iso = Crafty.isometric.size(128);",
+        "iso.place(2, 1, 0, Crafty.e('2D, DOM, Color').color('red').attr({w:128, h:128}));",
+        "~~~"
+      ],
+      "see": "Crafty.isometric.size"
+    },
+    {
+      "name": "Crafty.isometric.pos2px",
+      "comp": "Crafty.isometric",
+      "sign": "public this Crafty.isometric.pos2px(Number x,Number y)",
+      "param": [
+        "x",
+        "y"
+      ],
+      "return": "Object {left Number,top Number}",
+      "doc": "This method calculate the X and Y Coordinates to Pixel Positions",
+      "example": [
+        "",
+        "~~~",
+        "var iso = Crafty.isometric.size(128,96);",
+        "var position = iso.pos2px(100,100); //Object { left=12800, top=4800}",
+        "~~~"
+      ]
+    },
+    {
+      "name": "Crafty.isometric.px2pos",
+      "comp": "Crafty.isometric",
+      "sign": "public this Crafty.isometric.px2pos(Number left,Number top)",
+      "param": [
+        "top",
+        "left"
+      ],
+      "return": "Object {x Number,y Number}",
+      "doc": "This method calculate pixel top,left positions to x,y coordinates",
+      "example": [
+        "",
+        "~~~",
+        "var iso = Crafty.isometric.size(128,96);",
+        "var px = iso.pos2px(12800,4800);",
+        "console.log(px); //Object { x=100, y=100}",
+        "~~~"
+      ]
+    },
+    {
+      "name": "Crafty.isometric.centerAt",
+      "comp": "Crafty.isometric",
+      "sign": "public this Crafty.isometric.centerAt(Number x,Number y)",
+      "param": [
+        "top",
+        "left"
+      ],
+      "doc": "This method center the Viewport at x/y location or gives the current centerpoint of the viewport",
+      "example": [
+        "",
+        "~~~",
+        "var iso = Crafty.isometric.size(128,96).centerAt(10,10); //Viewport is now moved",
+        "//After moving the viewport by another event you can get the new center point",
+        "console.log(iso.centerAt());",
+        "~~~"
+      ]
+    },
+    {
+      "name": "Crafty.isometric.area",
+      "comp": "Crafty.isometric",
+      "sign": "public this Crafty.isometric.area()",
+      "return": "Object {x:{start Number,end Number},y:{start Number,end Number}}",
+      "doc": "This method get the Area surrounding by the centerpoint depends on viewport height and width",
+      "example": [
+        "",
+        "~~~",
+        "var iso = Crafty.isometric.size(128,96).centerAt(10,10); //Viewport is now moved",
+        "var area = iso.area(); //get the area",
+        "for(var y = area.y.start;y <= area.y.end;y++){",
+        "  for(var x = area.x.start ;x <= area.x.end;x++){",
+        "      iso.place(x,y,0,Crafty.e(\"2D,DOM,gras\")); //Display tiles in the Screen",
+        "  }",
+        "}",
+        "~~~"
+      ]
+    }
+  ],
+  "diamondiso.js": [
+    {
+      "name": "Crafty.diamondIso",
+      "category": "2D",
+      "doc": "Place entities in a 45deg diamond isometric fashion. It is similar to isometric but has another grid locations"
+    },
+    {
+      "name": "Crafty.diamondIso.init",
+      "comp": "Crafty.diamondIso",
+      "sign": "public this Crafty.diamondIso.init(Number tileWidth,Number tileHeight,Number mapWidth,Number mapHeight)",
+      "param": [
+        "tileWidth - The size of base tile width in Pixel",
+        "tileHeight - The size of base tile height in Pixel",
+        "mapWidth - The width of whole map in Tiles",
+        "mapHeight - The height of whole map in Tiles"
+      ],
+      "doc": [
+        "Method used to initialize the size of the isometric placement.",
+        "Recommended to use a size alues in the power of `2` (128, 64 or 32).",
+        "This makes it easy to calculate positions and implement zooming."
+      ],
+      "example": [
+        "",
+        "~~~",
+        "var iso = Crafty.diamondIso.init(64,128,20,20);",
+        "~~~"
+      ],
+      "see": "Crafty.diamondIso.place"
+    },
+    {
+      "name": "Crafty.diamondIso.place",
+      "comp": "Crafty.diamondIso",
+      "sign": "public this Crafty.diamondIso.place(Entity tile,Number x, Number y, Number layer)",
+      "param": [
+        "x - The `x` position to place the tile",
+        "y - The `y` position to place the tile",
+        "layer - The `z` position to place the tile (calculated by y position * layer)",
+        "tile - The entity that should be position in the isometric fashion"
+      ],
+      "doc": "Use this method to place an entity in an isometric grid.",
+      "example": [
+        "",
+        "~~~",
+        "var iso = Crafty.diamondIso.init(64,128,20,20);",
+        "isos.place(Crafty.e('2D, DOM, Color').color('red').attr({w:128, h:128}),1,1,2);",
+        "~~~"
+      ],
+      "see": "Crafty.diamondIso.size"
+    }
+  ],
+  "particles.js": [
+    {
+      "name": "Particles",
+      "category": "Graphics",
+      "trigger": "ParticleEnd - when the particle animation has finished",
+      "doc": [
+        "Based on Parcycle by Mr. Speaker, licensed under the MIT, Ported by Leo Koppelkamm",
+        "**This is canvas only & won't do anything if the browser doesn't support it!**",
+        "To see how this works take a look in https://github.com/craftyjs/Crafty/blob/master/src/particles.js"
+      ]
+    },
+    {
+      "name": ".particles",
+      "comp": "Particles",
+      "sign": "public this .particles(Object options)",
+      "param": "options - Map of options that specify the behavior and look of the particles.",
+      "example": [
+        "",
+        "~~~",
+        "var options = {",
+        "\tmaxParticles: 150,",
+        "\tsize: 18,",
+        "\tsizeRandom: 4,",
+        "\tspeed: 1,",
+        "\tspeedRandom: 1.2,",
+        "\t// Lifespan in frames",
+        "\tlifeSpan: 29,",
+        "\tlifeSpanRandom: 7,",
+        "\t// Angle is calculated clockwise: 12pm is 0deg, 3pm is 90deg etc.",
+        "\tangle: 65,",
+        "\tangleRandom: 34,",
+        "\tstartColour: [255, 131, 0, 1],",
+        "\tstartColourRandom: [48, 50, 45, 0],",
+        "\tendColour: [245, 35, 0, 0],",
+        "\tendColourRandom: [60, 60, 60, 0],",
+        "\t// Only applies when fastMode is off, specifies how sharp the gradients are drawn",
+        "\tsharpness: 20,",
+        "\tsharpnessRandom: 10,",
+        "\t// Random spread from origin",
+        "\tspread: 10,",
+        "\t// How many frames should this last",
+        "\tduration: -1,",
+        "\t// Will draw squares instead of circle gradients",
+        "\tfastMode: false,",
+        "\tgravity: { x: 0, y: 0.1 },",
+        "\t// sensible values are 0-3",
+        "\tjitter: 0",
+        "}",
+        "Crafty.e(\"2D,Canvas,Particles\").particles(options);",
+        "~~~"
+      ]
+    }
+  ],
+  "sound.js": [
+    {
+      "name": "Crafty.audio",
+      "category": "Audio",
+      "doc": [
+        "Add sound files and play them. Chooses best format for browser support.",
+        "Due to the nature of HTML5 audio, three types of audio files will be",
+        "required for cross-browser capabilities. These formats are MP3, Ogg and WAV.",
+        "When sound was not muted on before pause, sound will be unmuted after unpause.",
+        "When sound is muted Crafty.pause() does not have any effect on sound",
+        "The maximum number of sounds that can be played simultaneously is defined by Crafty.audio.maxChannels.  The default value is 7."
+      ]
+    },
+    {
+      "name": "Crafty.audio.supports",
+      "comp": "Crafty.audio",
+      "sign": "public this Crafty.audio.supports(String extension)",
+      "param": "extension - A file extension to check audio support for",
+      "doc": "Return true if the browser thinks it can play the given file type, otherwise false"
+    },
+    {
+      "name": "Crafty.audio.create",
+      "comp": "Crafty.audio",
+      "sign": "public this Crafty.audio.create(String id, String url)",
+      "param": [
+        "id - A string to refer to sounds",
+        "url - A string pointing to the sound file"
+      ],
+      "doc": [
+        "Creates an audio asset with the given id and resource.  `Crafty.audio.add` is a more flexible interface that allows cross-browser compatibility.",
+        "If the sound file extension is not supported, returns false; otherwise, returns the audio asset."
+      ]
+    },
+    {
+      "name": "Crafty.audio.add",
+      "comp": "Crafty.audio",
+      "sign": [
+        "public this Crafty.audio.add(String id, String url)",
+        "public this Crafty.audio.add(String id, Array urls)",
+        "public this Crafty.audio.add(Object map)"
+      ],
+      "param": [
+        "id - A string to refer to sounds",
+        "url - A string pointing to the sound file",
+        "urls - Array of urls pointing to different format of the same sound, selecting the first that is playable",
+        "map - key-value pairs where the key is the `id` and the value is either a `url` or `urls`"
+      ],
+      "doc": [
+        "Loads a sound to be played. Due to the nature of HTML5 audio,",
+        "three types of audio files will be required for cross-browser capabilities.",
+        "These formats are MP3, Ogg and WAV.",
+        "Passing an array of URLs will determine which format the browser can play and select it over any other.",
+        "Accepts an object where the key is the audio name and",
+        "either a URL or an Array of URLs (to determine which type to use).",
+        "The ID you use will be how you refer to that sound when using `Crafty.audio.play`."
+      ],
+      "example": [
+        "",
+        "~~~",
+        "//adding audio from an object",
+        "Crafty.audio.add({",
+        "shoot: [\"sounds/shoot.wav\",",
+        "\"sounds/shoot.mp3\",",
+        "\"sounds/shoot.ogg\"],",
+        "coin: \"sounds/coin.mp3\"",
+        "});",
+        "//adding a single sound",
+        "Crafty.audio.add(\"walk\", [",
+        "\"sounds/walk.mp3\",",
+        "\"sounds/walk.ogg\",",
+        "\"sounds/walk.wav\"",
+        "]);",
+        "//only one format",
+        "Crafty.audio.add(\"jump\", \"sounds/jump.mp3\");",
+        "~~~"
+      ]
+    },
+    {
+      "name": "Crafty.audio.play",
+      "comp": "Crafty.audio",
+      "sign": [
+        "public this Crafty.audio.play(String id)",
+        "public this Crafty.audio.play(String id, Number repeatCount)",
+        "public this Crafty.audio.play(String id, Number repeatCount, Number volume)"
+      ],
+      "param": [
+        "id - A string to refer to sounds",
+        "repeatCount - Repeat count for the file, where -1 stands for repeat forever.",
+        "volume - volume can be a number between 0.0 and 1.0"
+      ],
+      "doc": [
+        "Will play a sound previously added by using the ID that was used in `Crafty.audio.add`.",
+        "Has a default maximum of 5 channels so that the same sound can play simultaneously unless all of the channels are playing.",
+        "*Note that the implementation of HTML5 Audio is buggy at best.*"
+      ],
+      "example": [
+        "",
+        "~~~",
+        "Crafty.audio.play(\"walk\");",
+        "//play and repeat forever",
+        "Crafty.audio.play(\"backgroundMusic\", -1);",
+        "Crafty.audio.play(\"explosion\",1,0.5); //play sound once with volume of 50%",
+        "~~~"
+      ]
+    },
+    {
+      "name": "Crafty.audio.setChannels",
+      "comp": "Crafty.audio",
+      "sign": "public this Crafty.audio.setChannels(Number n)",
+      "param": "n - The maximum number of channels"
+    },
+    {
+      "name": "Crafty.audio.remove",
+      "comp": "Crafty.audio",
+      "sign": "public this Crafty.audio.remove([String id])",
+      "param": "id - A string to refer to sounds",
+      "doc": [
+        "Will stop the sound and remove all references to the audio object allowing the browser to free the memory.",
+        "If no id is given, all sounds will be removed."
+      ],
+      "example": [
+        "",
+        "~~~",
+        "Crafty.audio.remove(\"walk\");",
+        "~~~"
+      ]
+    },
+    {
+      "name": "Crafty.audio.stop",
+      "comp": "Crafty.audio",
+      "sign": "public this Crafty.audio.stop([Number ID])",
+      "doc": "Stops any playing sound. if id is not set, stop all sounds which are playing",
+      "example": [
+        "",
+        "~~~",
+        "//all sounds stopped playing now",
+        "Crafty.audio.stop();",
+        "~~~"
+      ]
+    },
+    {
+      "name": "Crafty.audio.toggleMute",
+      "comp": "Crafty.audio",
+      "sign": "public this Crafty.audio.toggleMute()",
+      "doc": [
+        "Mute or unmute every Audio instance that is playing. Toggles between",
+        "pausing or playing depending on the state."
+      ],
+      "example": [
+        "",
+        "~~~",
+        "//toggle mute and unmute depending on current state",
+        "Crafty.audio.toggleMute();",
+        "~~~"
+      ]
+    },
+    {
+      "name": "Crafty.audio.mute",
+      "comp": "Crafty.audio",
+      "sign": "public this Crafty.audio.mute()",
+      "doc": "Mute every Audio instance that is playing.",
+      "example": [
+        "",
+        "~~~",
+        "Crafty.audio.mute();",
+        "~~~"
+      ]
+    },
+    {
+      "name": "Crafty.audio.unmute",
+      "comp": "Crafty.audio",
+      "sign": "public this Crafty.audio.unmute()",
+      "doc": "Unmute every Audio instance that is playing.",
+      "example": [
+        "",
+        "~~~",
+        "Crafty.audio.unmute();",
+        "~~~"
+      ]
+    },
+    {
+      "name": "Crafty.audio.pause",
+      "comp": "Crafty.audio",
+      "sign": "public this Crafty.audio.pause(string ID)",
+      "param": "{string} id - The id of the audio object to pause",
+      "doc": "Pause the Audio instance specified by id param.",
+      "example": [
+        "",
+        "~~~",
+        "Crafty.audio.pause('music');",
+        "~~~"
+      ]
+    },
+    {
+      "name": "Crafty.audio.unpause",
+      "comp": "Crafty.audio",
+      "sign": "public this Crafty.audio.unpause(string ID)",
+      "param": "{string} id - The id of the audio object to unpause",
+      "doc": "Resume playing the Audio instance specified by id param.",
+      "example": [
+        "",
+        "~~~",
+        "Crafty.audio.unpause('music');",
+        "~~~"
+      ]
+    },
+    {
+      "name": "Crafty.audio.togglePause",
+      "comp": "Crafty.audio",
+      "sign": "public this Crafty.audio.togglePause(string ID)",
+      "param": "{string} id - The id of the audio object to pause/",
+      "doc": "Toggle the pause status of the Audio instance specified by id param.",
+      "example": [
+        "",
+        "~~~",
+        "Crafty.audio.togglePause('music');",
+        "~~~"
+      ]
+    }
+  ],
+  "text.js": [
+    {
+      "name": "Text",
+      "category": "Graphics",
+      "trigger": "Invalidate - when the text is changed",
+      "doc": [
+        "Component to make a text entity.",
+        "By default, text will have the style \"10px sans-serif\".",
+        "Note 1: An entity with the text component is just text! If you want to write text",
+        "inside an image, you need one entity for the text and another entity for the image.",
+        "More tips for writing text inside an image: (1) Use the z-index (from 2D component)",
+        "to ensure that the text is on top of the image, not the other way around; (2)",
+        "use .attach() (from 2D component) to glue the text to the image so they move and",
+        "rotate together.",
+        "Note 2: For DOM (but not canvas) text entities, various font settings (like",
+        "text-decoration and text-align) can be set using `.css()` (see DOM component). But",
+        "you cannot use `.css()` to set the properties which are controlled by `.textFont()`",
+        "or `.textColor()` -- the settings will be ignored.",
+        "Note 3: If you use canvas text with glyphs that are taller than standard letters, portions of the glyphs might be cut off."
+      ]
+    },
+    {
+      "name": ".text",
+      "comp": "Text",
+      "sign": [
+        "public this .text(String text)",
+        "public this .text(Function textgenerator)"
+      ],
+      "param": "text - String of text that will be inserted into the DOM or Canvas element.",
+      "doc": [
+        "This method will update the text inside the entity.",
+        "If you need to reference attributes on the entity itself you can pass a function instead of a string."
+      ],
+      "example": [
+        "",
+        "~~~",
+        "Crafty.e(\"2D, DOM, Text\").attr({ x: 100, y: 100 }).text(\"Look at me!!\");",
+        "Crafty.e(\"2D, DOM, Text\").attr({ x: 100, y: 100 })",
+        "    .text(function () { return \"My position is \" + this._x });",
+        "Crafty.e(\"2D, Canvas, Text\").attr({ x: 100, y: 100 }).text(\"Look at me!!\");",
+        "Crafty.e(\"2D, Canvas, Text\").attr({ x: 100, y: 100 })",
+        "    .text(function () { return \"My position is \" + this._x });",
+        "~~~"
+      ]
+    },
+    {
+      "name": ".textColor",
+      "comp": "Text",
+      "sign": "public this .textColor(String color, Number strength)",
+      "param": [
+        "color - The color in hexadecimal",
+        "strength - Level of opacity"
+      ],
+      "doc": "Modify the text color and level of opacity.",
+      "example": [
+        "",
+        "~~~",
+        "Crafty.e(\"2D, DOM, Text\").attr({ x: 100, y: 100 }).text(\"Look at me!!\")",
+        "  .textColor('#FF0000');",
+        "Crafty.e(\"2D, Canvas, Text\").attr({ x: 100, y: 100 }).text('Look at me!!')",
+        "  .textColor('#FF0000', 0.6);",
+        "~~~"
+      ],
+      "see": "Crafty.toRGB"
+    },
+    {
+      "name": ".textFont",
+      "comp": "Text",
+      "sign": [
+        "public this .textFont(String key, * value)",
+        "public this .textFont(Object map)"
+      ],
+      "param": [
+        "key - Property of the entity to modify",
+        "value - Value to set the property to",
+        "map - Object where the key is the property to modify and the value as the property value"
+      ],
+      "doc": [
+        "Use this method to set font property of the text entity.  Possible values are: type, weight, size, family, lineHeight, and variant.",
+        "When rendered by the canvas, lineHeight and variant will be ignored."
+      ],
+      "example": [
+        "",
+        "~~~",
+        "Crafty.e(\"2D, DOM, Text\").textFont({ type: 'italic', family: 'Arial' });",
+        "Crafty.e(\"2D, Canvas, Text\").textFont({ size: '20px', weight: 'bold' });",
+        "Crafty.e(\"2D, Canvas, Text\").textFont(\"type\", \"italic\");",
+        "Crafty.e(\"2D, Canvas, Text\").textFont(\"type\"); // italic",
+        "~~~"
+      ]
+    },
+    {
+      "name": ".unselectable",
+      "comp": "Text",
+      "sign": "public this .unselectable()",
+      "doc": [
+        "This method sets the text so that it cannot be selected (highlighted) by dragging.",
+        "(Canvas text can never be highlighted, so this only matters for DOM text.)",
+        "Works by changing the css property \"user-select\" and its variants."
+      ],
+      "example": [
+        "",
+        "~~~",
+        "Crafty.e(\"2D, DOM, Text\").text('This text cannot be highlighted!').unselectable();",
+        "~~~"
+      ]
+    }
+  ],
+  "loader.js": [
+    {
+      "name": "Crafty.assets",
+      "category": "Assets",
+      "doc": [
+        "An object containing every asset used in the current Crafty game.",
+        "The key is the URL and the value is the `Audio` or `Image` object.",
+        "If loading an asset, check that it is in this object first to avoid loading twice."
+      ],
+      "example": [
+        "",
+        "~~~",
+        "var isLoaded = !!Crafty.assets[\"images/sprite.png\"];",
+        "~~~"
+      ],
+      "see": "Crafty.loader"
+    },
+    {
+      "name": "Crafty.asset",
+      "category": "Assets",
+      "trigger": "NewAsset - After setting new asset - Object - key and value of new added asset.",
+      "sign": [
+        "public void Crafty.asset(String key, Object asset)",
+        "public void Crafty.asset(String key)"
+      ],
+      "param": [
+        "key - asset url.",
+        "asset - Audio` or `Image` object.",
+        "key - asset url."
+      ],
+      "doc": [
+        "Add new asset to assets object.",
+        "Get asset from assets object."
+      ],
+      "example": [
+        "",
+        "~~~",
+        "Crafty.asset(key, value);",
+        "var asset = Crafty.asset(key); //object with key and value fields",
+        "~~~"
+      ],
+      "see": "Crafty.assets"
+    },
+    {
+      "name": "Crafty.image_whitelist",
+      "category": "Assets",
+      "doc": "A list of file extensions that can be loaded as images by Crafty.load",
+      "example": [
+        "",
+        "~~~",
+        "Crafty.image_whitelist.push(\"tif\")",
+        "Crafty.load([\"images/sprite.tif\", \"sounds/jump.mp3\"],",
+        "    function() {",
+        "        //when loaded",
+        "        Crafty.scene(\"main\"); //go to main scene",
+        "        Crafty.audio.play(\"jump.mp3\"); //Play the audio file",
+        "    },",
+        "    function(e) {",
+        "      //progress",
+        "    },",
+        "    function(e) {",
+        "      //uh oh, error loading",
+        "    }",
+        ");",
+        "~~~"
+      ],
+      "see": [
+        "Crafty.asset",
+        "Crafty.load"
+      ]
+    },
+    {
+      "name": "Crafty.loader",
+      "category": "Assets",
+      "sign": "public void Crafty.load(Array assets, Function onLoad[, Function onProgress, Function onError])",
+      "param": [
+        "assets - Array of assets to load (accepts sounds and images)",
+        "onLoad - Callback when the assets are loaded",
+        "onProgress - Callback when an asset is loaded. Contains information about assets loaded",
+        "onError - Callback when an asset fails to load"
+      ],
+      "doc": [
+        "Preloader for all assets. Takes an array of URLs and",
+        "adds them to the `Crafty.assets` object.",
+        "Files with suffixes in `image_whitelist` (case insensitive) will be loaded.",
+        "If `Crafty.support.audio` is `true`, files with the following suffixes `mp3`, `wav`, `ogg` and `mp4` (case insensitive) can be loaded.",
+        "The `onProgress` function will be passed on object with information about",
+        "the progress including how many assets loaded, total of all the assets to",
+        "load and a percentage of the progress.",
+        "~~~",
+        "{ loaded: j, total: total, percent: (j / total * 100) ,src:src})",
+        "~~~",
+        "`onError` will be passed with the asset that couldn't load.",
+        "When `onError` is not provided, the onLoad is loaded even some assets are not successfully loaded. Otherwise, onLoad will be called no matter whether there are errors or not."
+      ],
+      "example": [
+        "",
+        "~~~",
+        "Crafty.load([\"images/sprite.png\", \"sounds/jump.mp3\"],",
+        "    function() {",
+        "        //when loaded",
+        "        Crafty.scene(\"main\"); //go to main scene",
+        "        Crafty.audio.play(\"jump.mp3\"); //Play the audio file",
+        "    },",
+        "    function(e) {",
+        "      //progress",
+        "    },",
+        "    function(e) {",
+        "      //uh oh, error loading",
+        "    }",
+        ");",
+        "~~~"
+      ],
+      "see": [
+        "Crafty.assets",
+        "Crafty.image_whitelist"
+      ]
+    },
+    {
+      "name": "Crafty.modules",
+      "category": "Assets",
+      "sign": "public void Crafty.modules([String repoLocation,] Object moduleMap[, Function onLoad])",
+      "param": [
+        "modules - Map of name:version pairs for modules to load",
+        "onLoad - Callback when the modules are loaded"
+      ],
+      "doc": [
+        "Browse the selection of community modules on http://craftycomponents.com",
+        "It is possible to create your own repository."
+      ],
+      "example": [
+        "",
+        "~~~",
+        "// Loading from default repository",
+        "Crafty.modules({ moveto: 'DEV' }, function () {",
+        "    //module is ready",
+        "    Crafty.e(\"MoveTo, 2D, DOM\");",
+        "});",
+        "// Loading from your own server",
+        "Crafty.modules({ 'http://mydomain.com/js/mystuff.js': 'DEV' }, function () {",
+        "    //module is ready",
+        "    Crafty.e(\"MoveTo, 2D, DOM\");",
+        "});",
+        "// Loading from alternative repository",
+        "Crafty.modules('http://cdn.crafty-modules.com', { moveto: 'DEV' }, function () {",
+        "    //module is ready",
+        "    Crafty.e(\"MoveTo, 2D, DOM\");",
+        "});",
+        "// Loading from the latest component website",
+        "Crafty.modules(",
+        "    'http://cdn.craftycomponents.com'",
+        "    , { MoveTo: 'release' }",
+        "    , function () {",
+        "    Crafty.e(\"2D, DOM, Color, MoveTo\")",
+        "      .attr({x: 0, y: 0, w: 50, h: 50})",
+        "      .color(\"green\");",
+        "    });",
+        "});",
+        "~~~"
+      ]
+    }
+  ],
+  "math.js": [
+    {
+      "name": "Crafty.math",
+      "category": "2D",
+      "doc": "Static functions."
+    },
+    {
+      "name": "Crafty.math.abs",
+      "comp": "Crafty.math",
+      "sign": "public this Crafty.math.abs(Number n)",
+      "param": "n - Some value.",
+      "return": "Absolute value.",
+      "doc": "Returns the absolute value."
+    },
+    {
+      "name": "Crafty.math.amountOf",
+      "comp": "Crafty.math",
+      "sign": "public Number Crafty.math.amountOf(Number checkValue, Number minValue, Number maxValue)",
+      "param": [
+        "checkValue - Value that should checked with minimum and maximum.",
+        "minValue - Minimum value to check.",
+        "maxValue - Maximum value to check."
+      ],
+      "return": "Amount of checkValue compared to minValue and maxValue.",
+      "doc": [
+        "Returns the amount of how much a checkValue is more like minValue (=0)",
+        "or more like maxValue (=1)"
+      ]
+    },
+    {
+      "name": "Crafty.math.clamp",
+      "comp": "Crafty.math",
+      "sign": "public Number Crafty.math.clamp(Number value, Number min, Number max)",
+      "param": [
+        "value - A value.",
+        "max - Maximum that value can be.",
+        "min - Minimum that value can be."
+      ],
+      "return": "The value between minimum and maximum.",
+      "doc": "Restricts a value to be within a specified range."
+    },
+    {
+      "name": "Crafty.math.degToRad",
+      "doc": "Converts angle from degree to radian.",
+      "comp": "Crafty.math",
+      "param": "angleInDeg - The angle in degree.",
+      "return": "The angle in radian."
+    },
+    {
+      "name": "Crafty.math.distance",
+      "comp": "Crafty.math",
+      "sign": "public Number Crafty.math.distance(Number x1, Number y1, Number x2, Number y2)",
+      "param": [
+        "x1 - First x coordinate.",
+        "y1 - First y coordinate.",
+        "x2 - Second x coordinate.",
+        "y2 - Second y coordinate."
+      ],
+      "return": "The distance between the two points.",
+      "doc": "Distance between two points."
+    },
+    {
+      "name": "Crafty.math.lerp",
+      "comp": "Crafty.math",
+      "sign": "public Number Crafty.math.lerp(Number value1, Number value2, Number amount)",
+      "param": [
+        "value1 - One value.",
+        "value2 - Another value.",
+        "amount - Amount of value2 to value1."
+      ],
+      "return": "Linear interpolated value.",
+      "doc": [
+        "Linear interpolation. Passing amount with a value of 0 will cause value1 to be returned,",
+        "a value of 1 will cause value2 to be returned."
+      ]
+    },
+    {
+      "name": "Crafty.math.negate",
+      "comp": "Crafty.math",
+      "sign": "public Number Crafty.math.negate(Number percent)",
+      "param": "percent - If you pass 1 a -1 will be returned. If you pass 0 a 1 will be returned.",
+      "return": "1 or -1.",
+      "doc": "Returnes \"randomly\" -1."
+    },
+    {
+      "name": "Crafty.math.radToDeg",
+      "comp": "Crafty.math",
+      "sign": "public Number Crafty.math.radToDeg(Number angle)",
+      "param": "angleInRad - The angle in radian.",
+      "return": "The angle in degree.",
+      "doc": "Converts angle from radian to degree."
+    },
+    {
+      "name": "Crafty.math.randomElementOfArray",
+      "comp": "Crafty.math",
+      "sign": "public Object Crafty.math.randomElementOfArray(Array array)",
+      "param": "array - A specific array.",
+      "return": "A random element of a specific array.",
+      "doc": "Returns a random element of a specific array."
+    },
+    {
+      "name": "Crafty.math.randomInt",
+      "comp": "Crafty.math",
+      "sign": "public Number Crafty.math.randomInt(Number start, Number end)",
+      "param": [
+        "start - Smallest int value that can be returned.",
+        "end - Biggest int value that can be returned."
+      ],
+      "return": "A random int.",
+      "doc": "Returns a random int in within a specific range."
+    },
+    {
+      "name": "Crafty.math.randomNumber",
+      "comp": "Crafty.math",
+      "sign": "public Number Crafty.math.randomNumber(Number start, Number end)",
+      "param": [
+        "start - Smallest number value that can be returned.",
+        "end - Biggest number value that can be returned."
+      ],
+      "return": "A random number.",
+      "doc": "Returns a random number in within a specific range."
+    },
+    {
+      "name": "Crafty.math.squaredDistance",
+      "comp": "Crafty.math",
+      "sign": "public Number Crafty.math.squaredDistance(Number x1, Number y1, Number x2, Number y2)",
+      "param": [
+        "x1 - First x coordinate.",
+        "y1 - First y coordinate.",
+        "x2 - Second x coordinate.",
+        "y2 - Second y coordinate."
+      ],
+      "return": "The squared distance between the two points.",
+      "doc": "Squared distance between two points."
+    },
+    {
+      "name": "Crafty.math.withinRange",
+      "comp": "Crafty.math",
+      "sign": "public Boolean Crafty.math.withinRange(Number value, Number min, Number max)",
+      "param": [
+        "value - The specific value.",
+        "min - Minimum value.",
+        "max - Maximum value."
+      ],
+      "return": "Returns true if value is within a specific range.",
+      "doc": "Check if a value is within a specific range."
+    },
+    {
+      "name": "Crafty.math.Vector2D",
+      "category": "2D",
+      "doc": [
+        "Vector2D uses the following form:",
+        "<x, y>"
+      ],
+      "sign": [
+        "public {Vector2D} Vector2D();",
+        "public {Vector2D} Vector2D(Vector2D);",
+        "public {Vector2D} Vector2D(Number, Number);"
+      ],
+      "param": [
+        "{Vector2D|Number=0} x",
+        "{Number=0} y"
+      ]
+    },
+    {
+      "name": ".add",
+      "comp": "Crafty.math.Vector2D",
+      "doc": "Adds the passed vector to this vector",
+      "sign": "public {Vector2D} add(Vector2D);",
+      "param": "{vector2D} vecRH"
+    },
+    {
+      "name": ".angleBetween",
+      "comp": "Crafty.math.Vector2D",
+      "doc": [
+        "Calculates the angle between the passed vector and this vector, using <0,0> as the point of reference.",
+        "Angles returned have the range (−π, π]."
+      ],
+      "sign": "public {Number} angleBetween(Vector2D);",
+      "param": "{Vector2D} vecRH"
+    },
+    {
+      "name": ".angleTo",
+      "comp": "Crafty.math.Vector2D",
+      "doc": "Calculates the angle to the passed vector from this vector, using this vector as the point of reference.",
+      "sign": "public {Number} angleTo(Vector2D);",
+      "param": "{Vector2D} vecRH"
+    },
+    {
+      "name": ".clone",
+      "comp": "Crafty.math.Vector2D",
+      "doc": "Creates and exact, numeric copy of this vector",
+      "sign": "public {Vector2D} clone();"
+    },
+    {
+      "name": ".distance",
+      "comp": "Crafty.math.Vector2D",
+      "doc": "Calculates the distance from this vector to the passed vector.",
+      "sign": "public {Number} distance(Vector2D);",
+      "param": "{Vector2D} vecRH"
+    },
+    {
+      "name": ".distanceSq",
+      "comp": "Crafty.math.Vector2D",
+      "doc": [
+        "Calculates the squared distance from this vector to the passed vector.",
+        "This function avoids calculating the square root, thus being slightly faster than .distance( )."
+      ],
+      "sign": "public {Number} distanceSq(Vector2D);",
+      "param": "{Vector2D} vecRH",
+      "see": ".distance"
+    },
+    {
+      "name": ".divide",
+      "comp": "Crafty.math.Vector2D",
+      "doc": "Divides this vector by the passed vector.",
+      "sign": "public {Vector2D} divide(Vector2D);",
+      "param": "{Vector2D} vecRH"
+    },
+    {
+      "name": ".dotProduct",
+      "comp": "Crafty.math.Vector2D",
+      "doc": "Calculates the dot product of this and the passed vectors",
+      "sign": "public {Number} dotProduct(Vector2D);",
+      "param": "{Vector2D} vecRH"
+    },
+    {
+      "name": ".equals",
+      "comp": "Crafty.math.Vector2D",
+      "doc": "Determines if this vector is numerically equivalent to the passed vector.",
+      "sign": "public {Boolean} equals(Vector2D);",
+      "param": "{Vector2D} vecRH"
+    },
+    {
+      "name": ".getNormal",
+      "comp": "Crafty.math.Vector2D",
+      "doc": "Calculates a new right-handed normal vector for the line created by this and the passed vectors.",
+      "sign": "public {Vector2D} getNormal([Vector2D]);",
+      "param": "{Vector2D=<0,0>} [vecRH]"
+    },
+    {
+      "name": ".isZero",
+      "comp": "Crafty.math.Vector2D",
+      "doc": "Determines if this vector is equal to <0,0>",
+      "sign": "public {Boolean} isZero();"
+    },
+    {
+      "name": ".magnitude",
+      "comp": "Crafty.math.Vector2D",
+      "doc": [
+        "Calculates the magnitude of this vector.",
+        "Note: Function objects in JavaScript already have a 'length' member, hence the use of magnitude instead."
+      ],
+      "sign": "public {Number} magnitude();"
+    },
+    {
+      "name": ".magnitudeSq",
+      "comp": "Crafty.math.Vector2D",
+      "doc": [
+        "Calculates the square of the magnitude of this vector.",
+        "This function avoids calculating the square root, thus being slightly faster than .magnitude( )."
+      ],
+      "sign": "public {Number} magnitudeSq();",
+      "see": ".magnitude"
+    },
+    {
+      "name": ".multiply",
+      "comp": "Crafty.math.Vector2D",
+      "doc": "Multiplies this vector by the passed vector",
+      "sign": "public {Vector2D} multiply(Vector2D);",
+      "param": "{Vector2D} vecRH"
+    },
+    {
+      "name": ".negate",
+      "comp": "Crafty.math.Vector2D",
+      "doc": "Negates this vector (ie. <-x,-y>)",
+      "sign": "public {Vector2D} negate();"
+    },
+    {
+      "name": ".normalize",
+      "comp": "Crafty.math.Vector2D",
+      "doc": [
+        "Normalizes this vector (scales the vector so that its new magnitude is 1)",
+        "For vectors where magnitude is 0, <1,0> is returned."
+      ],
+      "sign": "public {Vector2D} normalize();"
+    },
+    {
+      "name": ".scale",
+      "comp": "Crafty.math.Vector2D",
+      "doc": [
+        "Scales this vector by the passed amount(s)",
+        "If scalarY is omitted, scalarX is used for both axes"
+      ],
+      "sign": "public {Vector2D} scale(Number[, Number]);",
+      "param": [
+        "{Number} scalarX",
+        "{Number} [scalarY]"
+      ]
+    },
+    {
+      "name": ".scaleToMagnitude",
+      "comp": "Crafty.math.Vector2D",
+      "doc": "Scales this vector such that its new magnitude is equal to the passed value.",
+      "sign": "public {Vector2D} scaleToMagnitude(Number);",
+      "param": "{Number} mag"
+    },
+    {
+      "name": ".setValues",
+      "comp": "Crafty.math.Vector2D",
+      "doc": "Sets the values of this vector using a passed vector or pair of numbers.",
+      "sign": [
+        "public {Vector2D} setValues(Vector2D);",
+        "public {Vector2D} setValues(Number, Number);"
+      ],
+      "param": [
+        "{Number|Vector2D} x",
+        "{Number} y"
+      ]
+    },
+    {
+      "name": ".subtract",
+      "comp": "Crafty.math.Vector2D",
+      "doc": "Subtracts the passed vector from this vector.",
+      "sign": "public {Vector2D} subtract(Vector2D);",
+      "param": "{Vector2D} vecRH"
+    },
+    {
+      "name": ".toString",
+      "comp": "Crafty.math.Vector2D",
+      "doc": "Returns a string representation of this vector.",
+      "sign": "public {String} toString();"
+    },
+    {
+      "name": ".translate",
+      "comp": "Crafty.math.Vector2D",
+      "doc": [
+        "Translates (moves) this vector by the passed amounts.",
+        "If dy is omitted, dx is used for both axes."
+      ],
+      "sign": "public {Vector2D} translate(Number[, Number]);",
+      "param": [
+        "{Number} dx",
+        "{Number} [dy]"
+      ]
+    },
+    {
+      "name": ".tripleProduct",
+      "comp": "Crafty.math.Vector2D",
+      "doc": [
+        "Calculates the triple product of three vectors.",
+        "triple vector product = b(a•c) - a(b•c)"
+      ],
+      "sign": "public {Vector2D} tripleProduct(Vector2D, Vector2D, Vector2D);",
+      "param": [
+        "{Vector2D} a",
+        "{Vector2D} b",
+        "{Vector2D} c"
+      ],
+      "return": "{Vector2D} the triple product as a new vector"
+    },
+    {
+      "name": "Crafty.math.Matrix2D",
+      "category": "2D",
+      "doc": [
+        "The third row is always assumed to be [0, 0, 1].",
+        "Matrix2D uses the following form, as per the whatwg.org specifications for canvas.transform():",
+        "[a, c, e]",
+        "[b, d, f]",
+        "[0, 0, 1]"
+      ],
+      "sign": [
+        "public {Matrix2D} new Matrix2D();",
+        "public {Matrix2D} new Matrix2D(Matrix2D);",
+        "public {Matrix2D} new Matrix2D(Number, Number, Number, Number, Number, Number);"
+      ],
+      "param": [
+        "{Matrix2D|Number=1} a",
+        "{Number=0} b",
+        "{Number=0} c",
+        "{Number=1} d",
+        "{Number=0} e",
+        "{Number=0} f"
+      ]
+    },
+    {
+      "name": ".apply",
+      "comp": "Crafty.math.Matrix2D",
+      "doc": "Applies the matrix transformations to the passed object",
+      "sign": "public {Vector2D} apply(Vector2D);",
+      "param": "{Vector2D} vecRH - vector to be transformed"
+    },
+    {
+      "name": ".clone",
+      "comp": "Crafty.math.Matrix2D",
+      "doc": "Creates an exact, numeric copy of the current matrix",
+      "sign": "public {Matrix2D} clone();"
+    },
+    {
+      "name": ".combine",
+      "comp": "Crafty.math.Matrix2D",
+      "doc": [
+        "Multiplies this matrix with another, overriding the values of this matrix.",
+        "The passed matrix is assumed to be on the right-hand side."
+      ],
+      "sign": "public {Matrix2D} combine(Matrix2D);",
+      "param": "{Matrix2D} mtrxRH"
+    },
+    {
+      "name": ".equals",
+      "comp": "Crafty.math.Matrix2D",
+      "doc": "Checks for the numeric equality of this matrix versus another.",
+      "sign": "public {Boolean} equals(Matrix2D);",
+      "param": "{Matrix2D} mtrxRH"
+    },
+    {
+      "name": ".determinant",
+      "comp": "Crafty.math.Matrix2D",
+      "doc": "Calculates the determinant of this matrix",
+      "sign": "public {Number} determinant();"
+    },
+    {
+      "name": ".invert",
+      "comp": "Crafty.math.Matrix2D",
+      "doc": "Inverts this matrix if possible",
+      "sign": "public {Matrix2D} invert();",
+      "see": ".isInvertible"
+    },
+    {
+      "name": ".isIdentity",
+      "comp": "Crafty.math.Matrix2D",
+      "doc": "Returns true if this matrix is the identity matrix",
+      "sign": "public {Boolean} isIdentity();"
+    },
+    {
+      "name": ".isInvertible",
+      "comp": "Crafty.math.Matrix2D",
+      "doc": "Determines is this matrix is invertible.",
+      "sign": "public {Boolean} isInvertible();",
+      "see": ".invert"
+    },
+    {
+      "name": ".preRotate",
+      "comp": "Crafty.math.Matrix2D",
+      "doc": "Applies a counter-clockwise pre-rotation to this matrix",
+      "sign": "public {Matrix2D} preRotate(Number);",
+      "param": "{number} rads - angle to rotate in radians"
+    },
+    {
+      "name": ".preScale",
+      "comp": "Crafty.math.Matrix2D",
+      "doc": "Applies a pre-scaling to this matrix",
+      "sign": "public {Matrix2D} preScale(Number[, Number]);",
+      "param": [
+        "{Number} scalarX",
+        "{Number} [scalarY] scalarX is used if scalarY is undefined"
+      ]
+    },
+    {
+      "name": ".preTranslate",
+      "comp": "Crafty.math.Matrix2D",
+      "doc": "Applies a pre-translation to this matrix",
+      "sign": [
+        "public {Matrix2D} preTranslate(Vector2D);",
+        "public {Matrix2D} preTranslate(Number, Number);"
+      ],
+      "param": [
+        "{Number|Vector2D} dx",
+        "{Number} dy"
+      ]
+    },
+    {
+      "name": ".rotate",
+      "comp": "Crafty.math.Matrix2D",
+      "doc": "Applies a counter-clockwise post-rotation to this matrix",
+      "sign": "public {Matrix2D} rotate(Number);",
+      "param": "{Number} rads - angle to rotate in radians"
+    },
+    {
+      "name": ".scale",
+      "comp": "Crafty.math.Matrix2D",
+      "doc": "Applies a post-scaling to this matrix",
+      "sign": "public {Matrix2D} scale(Number[, Number]);",
+      "param": [
+        "{Number} scalarX",
+        "{Number} [scalarY] scalarX is used if scalarY is undefined"
+      ]
+    },
+    {
+      "name": ".setValues",
+      "comp": "Crafty.math.Matrix2D",
+      "doc": "Sets the values of this matrix",
+      "sign": [
+        "public {Matrix2D} setValues(Matrix2D);",
+        "public {Matrix2D} setValues(Number, Number, Number, Number, Number, Number);"
+      ],
+      "param": [
+        "{Matrix2D|Number} a",
+        "{Number} b",
+        "{Number} c",
+        "{Number} d",
+        "{Number} e",
+        "{Number} f"
+      ]
+    },
+    {
+      "name": ".toString",
+      "comp": "Crafty.math.Matrix2D",
+      "doc": "Returns the string representation of this matrix.",
+      "sign": "public {String} toString();"
+    },
+    {
+      "name": ".translate",
+      "comp": "Crafty.math.Matrix2D",
+      "doc": "Applies a post-translation to this matrix",
+      "sign": [
+        "public {Matrix2D} translate(Vector2D);",
+        "public {Matrix2D} translate(Number, Number);"
+      ],
+      "param": [
+        "{Number|Vector2D} dx",
+        "{Number} dy"
+      ]
+    }
+  ],
+  "time.js": [
+    {
+      "name": "Delay",
+      "category": "Utilities"
+    },
+    {
+      "name": ".delay",
+      "comp": "Delay",
+      "sign": "public this.delay(Function callback, Number delay)",
+      "param": [
+        "callback - Method to execute after given amount of milliseconds",
+        "delay - Amount of milliseconds to execute the method",
+        "repeat - How often to repeat the delayed function. A value of 0 triggers the delayed"
+      ],
+      "doc": [
+        "function exactly once. A value n > 0 triggers the delayed function exactly n+1 times. A",
+        "value of -1 triggers the delayed function indefinitely.",
+        "The delay method will execute a function after a given amount of time in milliseconds.",
+        "It is not a wrapper for `setTimeout`.",
+        "If Crafty is paused, the delay is interrupted with the pause and then resume when unpaused",
+        "If the entity is destroyed, the delay is also destroyed and will not have effect."
+      ],
+      "example": [
+        "",
+        "~~~",
+        "console.log(\"start\");",
+        "Crafty.e(\"Delay\").delay(function() {",
+        "  console.log(\"100ms later\");",
+        "}, 100, 0);",
+        "~~~"
+      ]
+    }
+  ],
+  "DebugLayer.js": [
+    {
+      "name": "DebugCanvas",
+      "category": "Debug",
+      "trigger": [
+        "Draw - when the entity is ready to be drawn to the stage",
+        "NoCanvas - if the browser does not support canvas"
+      ],
+      "doc": [
+        "When this component is added to an entity it will be drawn by the DebugCanvas layer.",
+        "Crafty.debugCanvas.init() will be automatically called if it is not called already to initialize the canvas element.",
+        "To visualise an object's MBR, use \"VisibleMBR\".  To visualise a \"Collision\" object's hitbox, use \"WiredHitBox\" or \"SolidHitBox\"."
+      ],
+      "see": "DebugPolygon,  DebugRectangle"
+    },
+    {
+      "name": ".debugAlpha",
+      "comp": "DebugCanvas",
+      "sign": "public  .debugAlpha(Number alpha)",
+      "param": "alpha - The alpha level the component will be drawn with"
+    },
+    {
+      "name": ".debugFill",
+      "comp": "DebugCanvas",
+      "sign": "public  .debugFill([String fillStyle])",
+      "param": "fillStyle - The color the component will be filled with.  Defaults to \"red\". Pass the boolean false to turn off filling.",
+      "example": [
+        "",
+        "~~~",
+        "var myEntity = Crafty.e(\"2D, Collision, SolidHitBox \").debugFill(\"purple\")",
+        "~~~"
+      ]
+    },
+    {
+      "name": ".debugStroke",
+      "comp": "DebugCanvas",
+      "sign": "public  .debugStroke([String strokeStyle])",
+      "param": "strokeStyle - The color the component will be outlined with.  Defaults to \"red\".  Pass the boolean false to turn this off.",
+      "example": [
+        "",
+        "~~~",
+        "var myEntity = Crafty.e(\"2D, Collision, WiredHitBox \").debugStroke(\"white\")",
+        "~~~"
+      ]
+    },
+    {
+      "name": "DebugRectangle",
+      "category": "Debug",
+      "doc": [
+        "A component for rendering an object with a position and dimensions to the debug canvas.",
+        "~~~",
+        "var myEntity = Crafty.e(\"2D, DebugRectangle\")",
+        "                     .attr({x: 13, y: 37, w: 42, h: 42})",
+        "                     .debugStroke(\"green\");",
+        "myEntity.debugRectangle(myEntity)",
+        "~~~"
+      ],
+      "see": "DebugCanvas"
+    },
+    {
+      "name": ".debugRectangle",
+      "comp": "DebugRectangle",
+      "sign": "public  .debugRectangle(Object rect)",
+      "param": "rect - an object with _x, _y, _w, and _h to draw",
+      "doc": "Sets the rectangle that this component draws to the debug canvas."
+    },
+    {
+      "name": "VisibleMBR",
+      "category": "Debug",
+      "doc": [
+        "Adding this component to an entity will cause it's MBR to be drawn to the debug canvas.",
+        "The methods of DebugCanvas can be used to control this component's appearance."
+      ],
+      "see": "2D, DebugRectangle, DebugCanvas"
+    },
+    {
+      "name": "DebugPolygon",
+      "category": "Debug",
+      "doc": [
+        "For drawing a polygon to the debug canvas",
+        "The methods of DebugCanvas can be used to control this component's appearance -- by default it is neither filled nor outlined",
+        "For debugging hitboxes, use WiredHitBox or SolidHitBox.  For debugging MBR, use VisibleMBR"
+      ],
+      "see": "DebugCanvas"
+    },
+    {
+      "name": ".debugPolygon",
+      "comp": "DebugPolygon",
+      "sign": "public  .debugPolygon(Polygon poly)",
+      "param": "poly - a polygon to render",
+      "doc": "Sets the polygon that this component renders to the debug canvas."
+    },
+    {
+      "name": "WiredHitBox",
+      "category": "Debug",
+      "doc": [
+        "Adding this component to an entity with a Collision component will cause its collision polygon to be drawn to the debug canvas as an outline",
+        "The methods of DebugCanvas can be used to control this component's appearance."
+      ],
+      "see": "DebugPolygon, DebugCanvas"
+    },
+    {
+      "name": "SolidHitBox",
+      "category": "Debug",
+      "doc": [
+        "Adding this component to an entity with a Collision component will cause its collision polygon to be drawn to the debug canvas, with a default alpha level of 0.7.",
+        "The methods of DebugCanvas can be used to control this component's appearance."
+      ],
+      "see": "DebugPolygon, DebugCanvas"
+    }
+  ],
+  "keycodes.js": [
+    {
+      "name": "Crafty.keys",
+      "category": "Input",
+      "doc": [
+        "Object of key names and the corresponding key code.",
+        "~~~",
+        "BACKSPACE: 8,",
+        "TAB: 9,",
+        "ENTER: 13,",
+        "PAUSE: 19,",
+        "CAPS: 20,",
+        "ESC: 27,",
+        "SPACE: 32,",
+        "PAGE_UP: 33,",
+        "PAGE_DOWN: 34,",
+        "END: 35,",
+        "HOME: 36,",
+        "LEFT_ARROW: 37,",
+        "UP_ARROW: 38,",
+        "RIGHT_ARROW: 39,",
+        "DOWN_ARROW: 40,",
+        "INSERT: 45,",
+        "DELETE: 46,",
+        "0: 48,",
+        "1: 49,",
+        "2: 50,",
+        "3: 51,",
+        "4: 52,",
+        "5: 53,",
+        "6: 54,",
+        "7: 55,",
+        "8: 56,",
+        "9: 57,",
+        "A: 65,",
+        "B: 66,",
+        "C: 67,",
+        "D: 68,",
+        "E: 69,",
+        "F: 70,",
+        "G: 71,",
+        "H: 72,",
+        "I: 73,",
+        "J: 74,",
+        "K: 75,",
+        "L: 76,",
+        "M: 77,",
+        "N: 78,",
+        "O: 79,",
+        "P: 80,",
+        "Q: 81,",
+        "R: 82,",
+        "S: 83,",
+        "T: 84,",
+        "U: 85,",
+        "V: 86,",
+        "W: 87,",
+        "X: 88,",
+        "Y: 89,",
+        "Z: 90,",
+        "NUMPAD_0: 96,",
+        "NUMPAD_1: 97,",
+        "NUMPAD_2: 98,",
+        "NUMPAD_3: 99,",
+        "NUMPAD_4: 100,",
+        "NUMPAD_5: 101,",
+        "NUMPAD_6: 102,",
+        "NUMPAD_7: 103,",
+        "NUMPAD_8: 104,",
+        "NUMPAD_9: 105,",
+        "MULTIPLY: 106,",
+        "ADD: 107,",
+        "SUBSTRACT: 109,",
+        "DECIMAL: 110,",
+        "DIVIDE: 111,",
+        "F1: 112,",
+        "F2: 113,",
+        "F3: 114,",
+        "F4: 115,",
+        "F5: 116,",
+        "F6: 117,",
+        "F7: 118,",
+        "F8: 119,",
+        "F9: 120,",
+        "F10: 121,",
+        "F11: 122,",
+        "F12: 123,",
+        "SHIFT: 16,",
+        "CTRL: 17,",
+        "ALT: 18,",
+        "PLUS: 187,",
+        "COMMA: 188,",
+        "MINUS: 189,",
+        "PERIOD: 190,",
+        "PULT_UP: 29460,",
+        "PULT_DOWN: 29461,",
+        "PULT_LEFT: 4,",
+        "PULT_RIGHT': 5",
+        "~~~"
+      ]
+    },
+    {
+      "name": "Crafty.mouseButtons",
+      "category": "Input",
+      "doc": [
+        "An object mapping mouseButton names to the corresponding button ID.",
+        "In all mouseEvents, we add the `e.mouseButton` property with a value normalized to match e.button of modern webkit browsers:",
+        "~~~",
+        "LEFT: 0,",
+        "MIDDLE: 1,",
+        "RIGHT: 2",
+        "~~~"
+      ]
+    }
+  ]
+}
